@@ -93,6 +93,32 @@ inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 
 ## WSL 代理配置
 
+``` bash
+# Set proxy
+is_proxy_open=0
+
+function pp {
+  if [ $is_proxy_open -eq 0 ]; then
+    host_ip=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
+    url="http://${host_ip}:7890"
+
+    export http_proxy=$url
+    export https_proxy=$url
+    
+    is_proxy_open=1
+
+    echo "proxy is open, proxy url: $url"
+
+    return
+  fi
+
+  is_proxy_open=0
+  export http_proxy=
+  export https_proxy=
+  echo "proxy is closed"
+}
 ```
 
-```
+## Windows 快捷键适配 Mac
+
+[Windows 快捷键适配 Mac](https://juejin.cn/post/7162921939198017567)
