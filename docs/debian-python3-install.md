@@ -15,10 +15,10 @@ sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
 ``` bash
 wget https://www.openssl.org/source/openssl-1.1.1t.tar.gz
 
-tar -zxvf openssl-1.1.1t.tar.gz -C /home/zhangchi/workarea/modules
-cd /home/zhangchi/workarea/modules/openssl-1.1.1t
+tar -zxvf openssl-1.1.1t.tar.gz -C $HOME/workarea/modules
+cd $HOME/workarea/modules/openssl-1.1.1t
 
-./config --prefix=/home/zhangchi/workarea/modules/ssl  
+./config --prefix=$HOME/workarea/modules/ssl  
 
 make -j32
 make test
@@ -29,8 +29,8 @@ make install
 
 ``` bash
 ./configure --prefix=/usr/local \
-    --with-openssl=/home/zhangchi/workarea/modules/ssl \
-    --with-openssl-rpath=/home/zhangchi/workarea/modules/ssl/lib \
+    --with-openssl=$HOME/workarea/modules/ssl \
+    --with-openssl-rpath=$HOME/workarea/modules/ssl/lib \
     --enable-shared LDFLAGS="-Wl,-rpath /usr/local/lib" \
     --enable-optimizations
 
