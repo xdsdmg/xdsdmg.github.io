@@ -1,5 +1,12 @@
 # VirtualBox Ubuntu 22.04 配置网络
 
+## Ubuntu 网络配置参考链接
+- [How To Change Network Interface Priority in Ubuntu?](https://devicetests.com/change-network-interface-priority-ubuntu)
+- [Linux 路由表](https://www.jianshu.com/p/8499b53eb0a5)
+- [How can I configure default route metric with dhcp and netplan?](https://askubuntu.com/questions/1008571/how-can-i-configure-default-route-metric-with-dhcp-and-netplan)
+
+## 配置步骤
+
 创建 Host-Only 和 NAT 网络，其中 Host-Only 网卡用于宿主机连接虚拟机，NAT 网卡用于虚拟机连接外部网络。
 
 ![](../img/1704634136220.jpg)
