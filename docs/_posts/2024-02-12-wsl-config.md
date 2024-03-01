@@ -1,6 +1,11 @@
-# Windows 与 WSL 配置
+---
+layout: post
+title:  "Windows 与 WSL 配置"
+date:   2024-02-12 14:05:09 +0800
+categories: jekyll update
+---
 
-## Vim 配置
+### Vim 配置
 
 ``` vim
 call plug#begin()
@@ -91,7 +96,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 ```
 
-## WSL 代理配置
+### WSL 代理配置
 
 ``` bash
 # Set proxy
@@ -119,6 +124,6 @@ function pp {
 }
 ```
 
-## Windows 快捷键适配 Mac
+### Windows 快捷键适配 Mac
 
 [Windows 快捷键适配 Mac](https://juejin.cn/post/7162921939198017567)

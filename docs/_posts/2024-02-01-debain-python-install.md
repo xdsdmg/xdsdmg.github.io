@@ -1,6 +1,11 @@
-# Debian 通过编译源码安装 Python3
+---
+layout: post
+title:  "Debian 通过编译源码安装 Python3"
+date:   2024-02-01 12:05:09 +0800
+categories: jekyll update
+---
 
-## 安装相关依赖
+### 安装相关依赖
 
 ``` bash
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
@@ -10,7 +15,7 @@ sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
        sqlite3 libsqlite3-dev
 ```
 
-## 配置 SSL
+### 配置 SSL
 
 ``` bash
 wget https://www.openssl.org/source/openssl-1.1.1t.tar.gz
@@ -25,7 +30,7 @@ make test
 make install
 ```
 
-## 安装 Python3
+### 安装 Python3
 
 ``` bash
 ./configure --prefix=/usr/local \
