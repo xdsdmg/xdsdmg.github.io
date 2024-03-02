@@ -133,9 +133,34 @@
   margin-bottom: $spacing-unit * .5;
 }
 
-.feed-subscribe .svg-icon {
-  padding: 5px 5px 2px 0
+
+.foot-content {
+  display: flex;
 }
+
+.foot-content-item {
+  display: flex;
+  align-items: center;
+  height: 25px;
+  line-height: 25px;
+  margin-right: 30px;
+}
+
+.foot-content-item .icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+}
+
+// .feed-subscribe a {
+//   display: block;
+//   height: 25px;
+//   line-height: 25px;
+// }
+
+// .feed-subscribe .svg-icon {
+//   padding: 5px 5px 2px 0
+// }
 
 #github-profile-link {
   margin-right: 15px
