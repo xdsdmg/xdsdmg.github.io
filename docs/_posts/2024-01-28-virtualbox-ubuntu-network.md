@@ -15,7 +15,7 @@ categories: jekyll update
 
 创建 Host-Only 和 NAT 网络，其中 Host-Only 网卡用于宿主机连接虚拟机，NAT 网卡用于虚拟机连接外部网络。
 
-![img](/asserts/1704634136220.jpg)
+![img](/assets/1704634136220.jpg)
 
 进入虚拟机执行以下命令更改网络配置文件。
 

@@ -26,8 +26,8 @@ email: xdsdmg@163.com
 #   Google search results) and in your feed.xml site description.
 baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://xdsdmg.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-# twitter_username: jekyllrb
 github_username: xdsdmg
+github-profile: "https://github.com/xdsdmg"
 
 # Build settings
 theme: minima
@@ -52,3 +52,5 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+minima:
+  skin: classic
