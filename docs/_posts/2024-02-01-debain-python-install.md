@@ -2,7 +2,7 @@
 layout: post
 title:  "Debian 通过编译源码安装 Python3"
 date:   2024-02-01 12:05:09 +0800
-categories: jekyll update
+categories: post
 ---
 
 ### 安装相关依赖

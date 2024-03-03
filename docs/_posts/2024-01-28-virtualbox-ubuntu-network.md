@@ -2,7 +2,7 @@
 layout: post
 title:  "VirtualBox Ubuntu 22.04 配置网络"
 date:   2024-01-28 15:05:09 +0800
-categories: jekyll update
+categories: post
 ---
 
 ### Ubuntu 网络配置参考链接

@@ -2,7 +2,7 @@
 layout: post
 title:  "Windows 与 WSL 配置"
 date:   2024-02-12 14:05:09 +0800
-categories: jekyll update
+categories: post
 ---
 
 ### Vim 配置
