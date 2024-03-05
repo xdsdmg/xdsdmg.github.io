@@ -1,11 +1,13 @@
 ---
 layout: post
-title: "About (WIP)"
+title: "About"
 date:   2024-03-03 20:57:09 +0800
 permalink: /about/
 ---
 
 在计算机的世界里，只要会敲代码，就可以拥有全世界。
+
+Just for fun.
 
 ### 前言
 
@@ -16,14 +18,26 @@ permalink: /about/
 本科和研究生都毕业于[中国矿业大学（CUMT）](https://www.cumt.edu.cn/)，之前上大学的时候，其实自己对计算机兴趣不大，更多是为了完成学业，那四年有些浑浑噩噩，每天和室友们一起打游戏，但也很开心。
 大四的时候自己也不知道将来要做什么，报考了本校的研究生，认真学了几个月结果竟然考上了。
 
+但真的很怀念上大学的时光，当时经常在网吧通宵，早上六七点回去，一路上微微凉的空气，阳光穿过树枝洒在路边，去食堂点两包泡面，最后回到宿舍睡觉。
+
 上了研究生以后逐渐开始对计算机感兴趣，一遍从事着实验室的科研工作、项目开发，一遍也自学着各种各样的计算机知识。
 
 #### 科研经历
 
-研究生前两年，主要研究对 [RFID](https://en.wikipedia.org/wiki/Radio-frequency_identification) 和 [LoRa](https://en.wikipedia.org/wiki/LoRa) 这两种无线通信技术的波形进行分析，以对人体动作进行识别或对目标进行定位等，后来发表了一篇关于 RFID 的 [paper](https://www.mdpi.com/1424-8220/22/16/6166)，也算是对这两年有个交代吧，哈哈。还找到了当时为做 RFID 实验用 WinForms 写的[数据采集程序](https://github.com/xdsdmg/rfid-data-collector)。
+研究生前两年，主要研究对 [RFID](https://en.wikipedia.org/wiki/Radio-frequency_identification) 和 [LoRa](https://en.wikipedia.org/wiki/LoRa) 这两种无线通信技术的波形进行分析，以对人体动作进行识别或对目标进行定位等，后来发表了一篇关于 RFID 的 [paper](https://www.mdpi.com/1424-8220/22/16/6166)，也算是对这两年有个交代吧，哈哈。前两天翻到了当时为做 RFID 实验用 WinForms 写的[数据采集程序](https://github.com/xdsdmg/rfid-data-collector)。
 
-研究生第三年，自己对之前的研究方向实在不感兴趣了，当时迷上了区块链以及涉及的密码学相关知识（零知识证明、同态加密等），就开始看各种跟区块链有关的书籍和论文，最终写了一篇跟区块链有关的[毕业论文](/assets/thesis.pdf)。
+有次夏天清晨在家门口的路旁做 LoRa 实验，邻居家的萨摩耶一直蹲在旁边看着，邻居说，你还搁这人五人六的看起来了hh。
+
+研究生第三年，自己对之前的研究方向实在不感兴趣了，当时迷上了区块链以及涉及的密码学、分布式系统相关知识，就开始看各种跟区块链有关的书籍和论文，最终写了一篇跟区块链有关的[毕业论文](/assets/thesis.pdf)。
 
 #### 自学经历
 
+最开始是给老板做项目，老板会接一些矿井提升机数据采集和展示方面的项目，当时学会了用 WinForms 和 WPF 做 Windows 桌面端图形应用开发，也掌握了前端 React 相关知识。
+
+后来开始学 Java（SSM）、C/C++、Docker、Hadoop、算法等等，知识的广度上提高了很多。
+
+研究生阶段最幸福的时间是毕业前的那几个月。
+
 ### 工作
+
+很感谢字节跳动给我第一份工作。
