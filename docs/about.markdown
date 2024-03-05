@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "About"
+title: "关于我"
 date:   2024-03-03 20:57:09 +0800
 permalink: /about/
 ---
