@@ -43,9 +43,12 @@ body {
   font-kerning: normal;
   display: flex;
   min-height: 100vh;
+  min-width: 800px;
   flex-direction: column;
   overflow-wrap: break-word;
-  font-family: Georgia, serif;
+  // font-family: Georgia, serif;
+  // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: source sans pro, sans-serif;
 }
 
 
