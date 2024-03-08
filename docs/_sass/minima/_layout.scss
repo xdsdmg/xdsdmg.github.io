@@ -25,8 +25,8 @@
 
 .header-body {
   display: grid;
-  grid-template-columns: 200px auto 70px 30px;
-  grid-template-areas: "site-title none link icon";
+  grid-template-columns: 200px auto 70px;
+  grid-template-areas: "site-title none link";
 }
 
 .site-title {
@@ -77,8 +77,25 @@
 }
 
 
-.foot-content {
+.footer-content {
+  display: grid;
+  grid-template-columns: 300px auto 120px;
+  grid-template-areas: "comment none icon";
+}
+
+.footer-comment {
+  font-size: 13px;
+  grid-area: comment;
+}
+
+.footer-icon-list {
+  grid-area: icon;
   display: flex;
+  align-items: center;
+}
+
+.footer-icon {
+  margin-left: 10px;
 }
 
 .foot-content-item {
@@ -168,8 +185,6 @@
     }
   }
 }
-
-
 
 /**
  * Page content
