@@ -45,6 +45,10 @@
   &:visited {
     color: $site-title-color;
   }
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 .header-icon-container {
@@ -61,6 +65,14 @@
 
 .page-link-list {
   grid-area: link;
+}
+
+.page-link-list a {
+  color: #424242;
+
+  &:hover {
+    text-decoration: none;
+  }
 }
 
 /**

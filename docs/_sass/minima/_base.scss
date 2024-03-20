@@ -49,6 +49,7 @@ body {
   // font-family: Georgia, serif;
   // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: source sans pro, sans-serif;
+  // font-family: LarkHackSafariFont, LarkEmojiFont, LarkChineseQuote, -apple-system, BlinkMacSystemFont, Helvetica Neue, Tahoma, PingFang SC, Microsoft Yahei, Arial, Hiragino Sans GB, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 
@@ -148,6 +149,7 @@ h6 {
  */
 a {
   color: $link-base-color;
+  // color: #004b6b;
   text-decoration: none;
 
   // &:visited {
@@ -155,7 +157,10 @@ a {
   // }
 
   &:hover {
-    color: $link-hover-color;
+    // color: $link-hover-color;
+    color: $link-base-color;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .social-media-list &:hover {
