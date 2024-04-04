@@ -148,7 +148,7 @@ h6 {
  * Links
  */
 a {
-  color: $link-base-color;
+  // color: $link-base-color;
   // color: #004b6b;
   text-decoration: none;
 
@@ -158,7 +158,7 @@ a {
 
   &:hover {
     // color: $link-hover-color;
-    color: $link-base-color;
+    // color: $link-base-color;
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }

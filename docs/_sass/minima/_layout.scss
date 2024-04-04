@@ -32,10 +32,11 @@
 .site-title {
   grid-area: site-title;
   @include relative-font-size(1.625);
-  font-weight: 300;
+  // font-weight: 500;
   letter-spacing: -1px;
   margin-bottom: 0;
   float: left;
+  // font-family: Georgia, serif;
 
   @include media-query($on-palm) {
     padding-right: 45px;
