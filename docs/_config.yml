@@ -54,3 +54,4 @@ plugins:
 #   - vendor/ruby/
 minima:
   skin: classic
+timezone: Asia/Shanghai
