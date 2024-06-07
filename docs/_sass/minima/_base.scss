@@ -26,8 +26,6 @@ figure {
 
 }
 
-
-
 /**
  * Basic styling
  */
@@ -48,11 +46,9 @@ body {
   overflow-wrap: break-word;
   // font-family: Georgia, serif;
   // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-family: source sans pro, sans-serif;
   // font-family: LarkHackSafariFont, LarkEmojiFont, LarkChineseQuote, -apple-system, BlinkMacSystemFont, Helvetica Neue, Tahoma, PingFang SC, Microsoft Yahei, Arial, Hiragino Sans GB, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  font-family: source sans pro, sans-serif;
 }
-
-
 
 /**
  * Set `margin-bottom` to maintain vertical rhythm
@@ -87,8 +83,6 @@ main {
   /* Default value of `display` of `main` element is 'inline' in IE 11. */
 }
 
-
-
 /**
  * Images
  */
@@ -96,8 +90,6 @@ img {
   max-width: 100%;
   vertical-align: middle;
 }
-
-
 
 /**
  * Figures
@@ -110,8 +102,6 @@ figcaption {
   font-size: $small-font-size;
 }
 
-
-
 /**
  * Lists
  */
@@ -121,14 +111,11 @@ ol {
 }
 
 li {
-
   >ul,
   >ol {
     margin-bottom: 0;
   }
 }
-
-
 
 /**
  * Headings
@@ -141,8 +128,6 @@ h5,
 h6 {
   font-weight: $base-font-weight;
 }
-
-
 
 /**
  * Links
@@ -174,7 +159,6 @@ a {
   }
 }
 
-
 /**
  * Blockquotes
  */
@@ -194,8 +178,6 @@ blockquote {
     font-style: normal;
   }
 }
-
-
 
 /**
  * Code formatting
@@ -234,8 +216,6 @@ pre {
   }
 }
 
-
-
 /**
  * Wrapper
  */
@@ -254,8 +234,6 @@ pre {
   }
 }
 
-
-
 /**
  * Clearfix
  */
@@ -265,20 +243,6 @@ pre {
   clear: both;
 }
 
-
-
-/**
- * Icons
- */
-
-.orange {
-  color: #f66a0a;
-}
-
-.grey {
-  color: #828282;
-}
-
 .svg-icon {
   width: 1.25em;
   height: 1.25em;
@@ -286,7 +250,6 @@ pre {
   fill: currentColor;
   vertical-align: text-bottom;
 }
-
 
 /**
  * Tables
