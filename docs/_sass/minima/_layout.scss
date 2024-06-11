@@ -2,11 +2,16 @@
  * Site header
  */
 .site-header {
+  // Positioning context for the mobile navigation icon
+  position: fixed;
+  z-index: 1;
+
   min-height: $spacing-unit * 1.865;
   line-height: $base-line-height * $base-font-size * 2.25;
+  width: 100%;
 
-  // Positioning context for the mobile navigation icon
-  position: relative;
+  background-color: white;
+  border-bottom: 1px solid $border-color-01;
 }
 
 .site-nav {
@@ -62,7 +67,7 @@
 
 .page-link-list {
   grid-area: link;
-  
+
   display: flex;
   align-items: center;
   justify-content: right;
@@ -193,6 +198,8 @@
  * Page content
  */
 .page-content {
+  position: relative;
+  top: $spacing-unit * 1.865;
   padding: $spacing-unit 0;
   flex: 1 0 auto;
 }
@@ -288,6 +295,34 @@
   h6 {
     @include relative-font-size(1.0625);
   }
+}
+
+#table-of-contents {
+  position: fixed;
+  left: 0;
+  top: $spacing-unit * 2.865;
+  font-size: .875rem;
+}
+
+#table-of-contents ul ul {
+  margin-left: 15px;
+}
+
+#table-of-contents ul ul ul {
+  margin-left: 20px;
+}
+
+#table-of-contents ul li {
+  list-style-position: inside;
+}
+
+#table-of-contents ul li:before {
+  content: "";
+  margin-left: -0.5rem;
+}
+
+#table-of-contents li a {
+  color: #111111;
 }
 
 .social-media-list {
