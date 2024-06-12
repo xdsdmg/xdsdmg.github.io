@@ -1,5 +1,6 @@
 html {
   font-size: $base-font-size;
+  height: 100%;
 }
 
 /**
@@ -43,11 +44,13 @@ body {
   min-height: 100vh;
   min-width: 800px;
   flex-direction: column;
+  overflow: hidden;
   overflow-wrap: break-word;
   // font-family: Georgia, serif;
   // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   // font-family: LarkHackSafariFont, LarkEmojiFont, LarkChineseQuote, -apple-system, BlinkMacSystemFont, Helvetica Neue, Tahoma, PingFang SC, Microsoft Yahei, Arial, Hiragino Sans GB, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-family: source sans pro, sans-serif;
+  height: 100%;
 }
 
 /**
