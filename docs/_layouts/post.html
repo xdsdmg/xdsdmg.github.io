@@ -28,7 +28,12 @@ layout: base
   </header>
 
   <div id="table-of-contents">
-    {% toc %}
+    {% capture toc_size %}{{ content | toc_only | size }}{% endcapture %}
+    {% assign toc_size = toc_size | plus: 0 %}
+    {% if toc_size > 39 %}
+    <span style="margin-left: 30px;"><b>{{ page.title | escape }}</b></span>
+    {% endif %}
+    {{ content | toc_only }}
   </div>
 
   <div class="post-content e-content" itemprop="articleBody">
