@@ -308,23 +308,29 @@
 
 #table-of-contents {
   position: fixed;
-  left: 0;
+  left: $spacing-unit;
   top: $spacing-unit * 2.865;
   font-size: .875rem;
+  width: 10 * $spacing-unit;
+}
+
+#table-of-contents ul {
+  margin-left: 0;
 }
 
 #table-of-contents ul ul {
-  margin-left: 15px;
+  margin-left: 8px;
 }
 
 #table-of-contents ul ul ul {
-  margin-left: 20px;
+  margin-left: 16px;
 }
 
 #table-of-contents ul li {
   list-style-position: inside;
 }
 
+// Set the length between marker and content
 #table-of-contents ul li:before {
   content: "";
   margin-left: -0.5rem;

@@ -31,7 +31,7 @@ layout: base
     {% capture toc_size %}{{ content | toc_only | size }}{% endcapture %}
     {% assign toc_size = toc_size | plus: 0 %}
     {% if toc_size > 39 %}
-    <a style="margin-left: 30px;" href="#{{ page.title | escape }}"><b>{{ page.title | escape }}</b></a>
+    <a href="#{{ page.title | escape }}"><b>{{ page.title | escape }}</b></a>
     {% endif %}
     {{ content | toc_only }}
   </div>
