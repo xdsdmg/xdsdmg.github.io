@@ -41,10 +41,45 @@ Jul  1 14:20:10 server kernel: [UFW BLOCK] IN=eth0 OUT= MAC=... SRC=203.0.113.5 
 Jul  1 15:30:45 server kernel: [ 123.456789] audit: type=1400 audit(1234567890.123:456): apparmor="DENIED" operation="open" profile="/usr/sbin/sshd" name="/etc/shadow" pid=12345 comm="sshd" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
 ```
 
+也可以通过`netstat`命令查看当前系统中是否有异常网络连接，及`tcpdump`抓包检查是否有异常流量。
 
-还可以通过`netstat`命令查看当前系统中是否有异常网络连接，及`tcpdump`抓包检查是否有异常流量。
+还可以看看`.bash_history`、`.zsh_history`等这些记录执行过的历史 shell 命令的文件中有没有奇怪的记录。
+
+### 一些专有名词
+
+安全领域有很多专有名词，记录下
+
+- SIEM（Security Information and Event Management）
+- SOAR（Security Orchestration, Automation, and Response）
+- IDS（Intrusion Detection System）
+- IPS（Intrusion Prevention System）
+- DLP（Data Loss Prevention）
+- UEBA（User and Entity Behavior Analytics）
+- EPP（Endpoint Protection Platform）
+- EDR（Endpoint Detection and Response）
+- TI（Threat Intelligence）
+- NTA（Network Traffic Analysis）
+- XDR（Extended Detection and Response）
+- RASP（Runtime Application Self-Protection）
+- WAF（Web Application Firewall）
+- IoC（Indicators of Compromise）
+- HIDS（Host Intrusion Detection System）
+
+这些技术似乎每一个都是非常复杂的领域，从不同的角度提高系统的安全水位。
+
+有些技术侧重于完成下面这样一个链条（注：这个链条让我联想到攻击溯源技术<sup>[[3]](#ref-3)</sup>）：
+
+1. 采集各种终端设备的日志记录；
+2. 将这些数据标准化为一致的结构（比如：源 IP、目的 IP、事件类型、时间戳等），可能还会对数据进行富化，额外添加一些字段；
+3. 确定各项指标的基线数据，作为分析时的参考；
+4. 分析数据：
+    - 将收集到的数据与基线数据比较，是否有明显差异；
+    - 将收集到的数据与 IoC 对照，是否存在威胁迹象；
+    - 系统中是否存在异常行为，比如存在大量的异常失败请求。
+5. 建立自动化监控与报警。
 
 ### 参考文献 
 
 1. <a id='ref-1' href='https://www.openwall.com/lists/oss-security/2024/03/29/4'>The email publishing the existence of the xz attack</a>
-1. <a id='ref-2' href='https://linux.vbird.org/linux_basic/mandrake9/0570syslog.php'>认识与分析登录档</a>
+2. <a id='ref-2' href='https://linux.vbird.org/linux_basic/mandrake9/0570syslog.php'>认识与分析登录档</a>
+3. <a id='ref-3' href='https://websec.readthedocs.io/zh/latest/defense/forensic.html#'>溯源分析</a>
