@@ -64,10 +64,11 @@ Jul  1 15:30:45 server kernel: [ 123.456789] audit: type=1400 audit(1234567890.1
 - WAF（Web Application Firewall）
 - IoC（Indicators of Compromise）
 - HIDS（Host Intrusion Detection System）
+- CWPP（Cloud Workload Protection Platform）<sup>[[3]](#ref-3)</sup>
 
 这些技术似乎每一个都是非常复杂的领域，从不同的角度提高系统的安全水位。
 
-有些技术侧重于完成下面这样一个链条（注：这个链条让我联想到攻击溯源技术<sup>[[3]](#ref-3)</sup>）：
+有些技术侧重于完成下面这样一个链条（注：这个链条让我联想到攻击溯源技术<sup>[[4]](#ref-4)</sup>）：
 
 1. 采集各种终端设备的日志记录；
 2. 将这些数据标准化为一致的结构（比如：源 IP、目的 IP、事件类型、时间戳等），可能还会对数据进行富化，额外添加一些字段；
@@ -82,4 +83,5 @@ Jul  1 15:30:45 server kernel: [ 123.456789] audit: type=1400 audit(1234567890.1
 
 1. <a id='ref-1' href='https://www.openwall.com/lists/oss-security/2024/03/29/4'>The email publishing the existence of the xz attack</a>
 2. <a id='ref-2' href='https://linux.vbird.org/linux_basic/mandrake9/0570syslog.php'>认识与分析登录档</a>
-3. <a id='ref-3' href='https://websec.readthedocs.io/zh/latest/defense/forensic.html#'>溯源分析</a>
+3. <a id='ref-3' href='https://www.cloudflare.com/zh-cn/learning/cloud/what-is-cwpp/'>什么是云工作负载保护平台（CWPP）？</a>
+4. <a id='ref-4' href='https://websec.readthedocs.io/zh/latest/defense/forensic.html#'>溯源分析</a>
