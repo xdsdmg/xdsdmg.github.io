@@ -22,7 +22,6 @@ title: 记录 & 分享
 email: xdsdmg@163.com
 repository: xdsdmg/xdsdmg.github.io 
 description: >- # this means to ignore newlines until "baseurl:"
-  ZhangChi's blog
 baseurl: "/" # the subpath of your site, e.g. /blog
 url: "https://xdsdmg.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: xdsdmg
