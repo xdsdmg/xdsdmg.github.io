@@ -88,7 +88,15 @@
 .site-footer {
   grid-area: footer;
   padding: $spacing-unit 0;
-  height: calc(#{$spacing-unit} * 2);
+  height: calc(#{$spacing-unit} * 3);
+}
+
+.foot-line {
+  height: 1px;
+  width: 100%;
+  // margin-top: 15px;
+  // background: #c9cdd4;
+  background: #283f44;
 }
 
 .footer-heading {
@@ -204,7 +212,7 @@
   grid-template-areas:
   "page-content"
   "footer";
-  grid-template-rows: auto calc(#{$spacing-unit} * 4);
+  grid-template-rows: auto calc(#{$spacing-unit} * 5);
   height: calc(100% - (#{$spacing-unit} * 1));
   overflow-y: auto;
   scroll-behavior: auto;
