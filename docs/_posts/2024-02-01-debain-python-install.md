@@ -17,6 +17,8 @@ sudo apt-get install -y make build-essential libssl-dev zlib1g-dev \
 
 ### 配置 SSL
 
+pip 会依赖 openssl，系统自带的 openssl 版本可能过低，导致安装好后无法使用 pip。
+
 ``` bash
 wget https://www.openssl.org/source/openssl-1.1.1t.tar.gz
 
@@ -33,6 +35,9 @@ make install
 ### 安装 Python3
 
 ``` bash
+# 选择合适的版本
+wget https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tgz
+
 ./configure --prefix=/usr/local \
     --with-openssl=$HOME/workarea/modules/ssl \
     --with-openssl-rpath=$HOME/workarea/modules/ssl/lib \

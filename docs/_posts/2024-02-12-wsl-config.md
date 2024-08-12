@@ -5,13 +5,43 @@ date:   2024-02-12 14:05:09 +0800
 categories: post
 ---
 
-### Vim 配置
+---
+
+2024-08-11 买了台新电脑（铭凡 UM790PRO），又重新配置了下，更新部分内容。
+
+---
+
+### 安装 Debian
+
+WSL 我一直使用 Debian，可以在 Micscoft Store 中直接安装，但第一次启动可能会报错，我当时重启下电脑就好了。
+
+```
+wslregisterdistribution failed with error: 0x8004032d
+```
+
+配置下国内的软件源，提高 apt 或 apt-get 的下载速度。
+
+[清华大学开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/help/debian/)
+
+### 字体
+
+编辑器、IDE 及终端等的字体我一直用 [Hack](https://github.com/source-foundry/Hack)（[下载链接](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Hack.zip)）这款字体。
+
+### 编辑器配置
+
+我平时使用 [Windows Terminal](https://github.com/microsoft/terminal) 作为终端开启 Debian，使用 Vim/[Neovim](https://neovim.io/) 与 [tmux](https://github.com/tmux/tmux/wiki) 的组合作为编辑器多一些。
+
+#### Vim
+
+Vim 的配置文件是`$HOME/.vimrc`，这是我最早的 Vim 配置，现在我的 Vim 只进行基础配置，不再安装额外的插件了，把这个脚本放在这里当作纪念。
 
 ``` vim
 call plug#begin()
+" 导航栏
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin' " 可以在导航目录中看到 git 版本信息
 
+" 括号等标签自动补全
 Plug 'jiangmiao/auto-pairs'
 
 " themes
@@ -19,16 +49,23 @@ Plug 'crusoexia/vim-monokai'
 
 Plug 'vim-airline/vim-airline'
 
+" lsp 相关
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+" 模糊搜索
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
-" base setup
+/*
+    Base setup
+    Ref: https://www.ruanyifeng.com/blog/2018/09/vimrc.html  
+*/
 set nocompatible
 syntax on
 set showmode
@@ -51,19 +88,21 @@ set backspace=indent,eol,start
 colorscheme monokai
 
 " keymap
-nmap o o<esc>k
-nmap ss <cmd>wa<CR> 
-nmap nh <cmd>nohl<CR>
-nmap nt <cmd>NERDTreeToggle<CR>
-nmap <C-a> gg<S-v><S-g>
-nmap qq <cmd>%s/$/\\n\\n/g<CR>gg1000<S-j>
-nmap tf <cmd>Files<CR>
-nmap tl <cmd>RG<CR>
+nmap o o<esc>k                      " normal 模式下按 o 当前行下方增加空行
+nmap ss <cmd>wa<CR>                 " normal 模式下按 ss 将所有 buffer 中的内容写入对应文件
+nmap nh <cmd>nohl<CR>               " 通常用于搜索指定内容后，取消匹配项的高亮
+nmap nt <cmd>NERDTreeToggle<CR>     " 开启导航栏
+nmap <C-a> gg<S-v><S-g>             " ctrl+a 全选
+nmap tf <cmd>Files<CR>              " 模糊搜索文件名称
+nmap tl <cmd>RG<CR>                 " 模糊搜索文件内容
 
 " autocmd
 autocmd WinLeave * setlocal nocursorline
 autocmd WinEnter * setlocal cursorline
 
+/*
+    Setup lsp
+*/
 function!  s:on_lsp_buffer_enabled() abort
     setlocal omnifunc=lsp#complete
     setlocal signcolumn=yes
@@ -91,10 +130,26 @@ augroup lsp_install
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
+/*
+    这里记不清具体作用了
+*/
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 ```
+
+#### Neovim
+
+- [通过 AppImage 安装](https://github.com/neovim/neovim/blob/master/INSTALL.md#appimage-universal-linux-package)
+- [Neovim 配置](https://github.com/xdsdmg/neovim-config)
+
+#### tmux
+
+``` bash
+sudo apt install tmux
+```
+
+[tmux 配置](https://github.com/xdsdmg/tmux-config)
 
 ### WSL 代理配置
 
