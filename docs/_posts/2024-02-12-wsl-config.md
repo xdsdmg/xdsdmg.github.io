@@ -19,6 +19,27 @@ WSL 我一直使用 Debian，可以在 Micscoft Store 中直接安装，但第�
 wslregisterdistribution failed with error: 0x8004032d
 ```
 
+如果启动时有以下错误提示：
+
+```
+wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。
+```
+
+可以在 Windows 中`%USERPROFILE%\.wslconfig`文件添加下面内容：
+
+```
+[wsl2]
+networkingMode=mirrored
+dnsTunneling=true
+firewall=true
+autoProxy=true
+
+[experimental]
+# requires dnsTunneling but are also OPTIONAL
+bestEffortDnsParsing=true
+useWindowsDnsCache=true
+```
+
 配置下国内的软件源，提高 apt 或 apt-get 的下载速度。
 
 [清华大学开源软件镜像站](https://mirrors.tuna.tsinghua.edu.cn/help/debian/)
@@ -159,8 +180,9 @@ is_proxy_open=0
 
 function pp {
   if [ $is_proxy_open -eq 0 ]; then
-    host_ip=$(cat /etc/resolv.conf | grep nameserver | awk '{ print $2 }')
-    url="http://${host_ip}:7890"
+    host_ip=127.0.0.1 # 新版本的 WSL 已支持与宿主机共享 ip
+    port=7890
+    url="http://${host_ip}:${port}"
 
     export http_proxy=$url
     export https_proxy=$url

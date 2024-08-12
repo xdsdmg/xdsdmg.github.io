@@ -34,6 +34,8 @@ make install
 
 ### 安装 Python3
 
+[Python 源码下载列表](https://www.python.org/downloads/source/)
+
 ``` bash
 # 选择合适的版本
 wget https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tgz
@@ -47,7 +49,12 @@ wget https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tgz
 make -j32
 make test
 make install
+```
 
+可以再设置下 alias
+
+``` bash
 alias py3="/usr/local/bin/python3"
 alias pip="/usr/local/bin/pip3"
 ```
+
