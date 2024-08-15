@@ -164,13 +164,24 @@ inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 - [通过 AppImage 安装](https://github.com/neovim/neovim/blob/master/INSTALL.md#appimage-universal-linux-package)
 - [Neovim 配置](https://github.com/xdsdmg/neovim-config)
 
+``` bash
+# 导入 Neovim 配置
+git clone https://github.com/xdsdmg/neovim-config.git --depth 1 $HOME/.config/nvim
+```
+
 #### tmux
 
 ``` bash
+# 安装 tmux
 sudo apt install tmux
 ```
 
 [tmux 配置](https://github.com/xdsdmg/tmux-config)
+
+``` bash
+# 导入 tmux 配置
+git clone https://github.com/xdsdmg/tmux-config.git --depth 1 $HOME/.config/tmux
+```
 
 ### WSL 代理配置
 
