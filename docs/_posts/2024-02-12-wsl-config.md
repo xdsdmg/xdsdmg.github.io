@@ -83,10 +83,8 @@ Plug 'junegunn/fzf.vim'
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
-/*
-    Base setup
-    Ref: https://www.ruanyifeng.com/blog/2018/09/vimrc.html  
-*/
+" Base setup
+" Ref: https://www.ruanyifeng.com/blog/2018/09/vimrc.html  
 set nocompatible
 syntax on
 set showmode
