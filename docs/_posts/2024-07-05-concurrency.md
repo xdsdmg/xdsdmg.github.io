@@ -27,15 +27,14 @@ categories: post
 
 #### 线程的内存分布
 
-在 stack overflow 看到一则关于线程内存分布的回答（[链接](https://stackoverflow.com/a/54047901/24743435)），感觉很棒。大概意思是讲，<u>我们可以把进程视为一个持有操作系统资源且相互隔离的容器，线程能够在这个容器中执行，并且共享这个容器中的资源，线程才是 CPU 执行的基本单元</u>，对于早期 UNIX 系统，在一个进程中只会有一个线程（主线程，在 C 语言中，可以认为是 main 函数的执行体），可以称为 1:1 模型，对于现代 Linux 系统，在一个进程中可以有多个线程，可以称为 1:N 模型。
-
-这里体现了操作系统的一些理念，引入进程概念的重要原因之一是资源隔离，而线程是为了提高程序的运行效率[^other]。
+在 stack overflow 看到一则关于线程内存分布的回答（[链接](https://stackoverflow.com/a/54047901/24743435)），感觉很棒。大概意思是讲，我们可以把进程视为一个持有操作系统资源（比如，套接字）且相互隔离的容器，线程能够在这个容器中运行，并且与这个容器内的其他线程共享这个容器中的资源，线程才是 CPU 执行的基本单元，对于早期 UNIX 系统，在一个进程中只会有一个线程（主线程，在 C 语言中，可以认为是 main 函数的执行体），可以称为 1:1 模型，对于现代 Linux 系统，在一个进程中可以有多个线程，可以称为 1:N 模型。这里体现了操作系统的一些理念，引入进程概念的重要原因之一是资源隔离，而线程是为了提高程序的运行效率[^other]。
 
 [^other]: 想起之前看到过这样一句话，运维的本质在于资源的隔离，不在于资源的扩充。
 
-线程的内存分布基本如下图所示[^thread-mem-layout]
+线程的内存分布基本如下图所示[^thread-mem-layout]，其中粉色区域为线程的栈空间，黄色区域为所有线程可以共享。主线程的栈，ASLR 也会影响内存空间的分布。
 
-[^thread-mem-layout]: 主要参考 [CS:APP](https://csapp.cs.cmu.edu/) 9.7.2 小节与 [OSTEP 26 节第 2 页](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)。
+
+[^thread-mem-layout]: 主要参考 [CS:APP](https://csapp.cs.cmu.edu/) 9.7.2 小节与 [OSTEP 26 节第 2 页](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)，对于图中细节可参阅这两部分。
 
 
 <div align="center">
@@ -160,5 +159,6 @@ int main(int argc, char *argv[]) {
   printf("main: end (counter = %d)\n", counter);
 
   return 0;
+
 }
 ```
