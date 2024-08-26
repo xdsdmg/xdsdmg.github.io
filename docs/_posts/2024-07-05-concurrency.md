@@ -5,8 +5,6 @@ date: 2024-07-05 23:55:09 +0800
 categories: post
 ---
 
-![cover](/assets/imgs/concurrency-cover.png)
-
 ### 前言
 
 最近看完了 [OSTEP](https://pages.cs.wisc.edu/~remzi/OSTEP/#book-chapters) 的并发部分，想写一篇博客作为回顾，并发对我而言是一个很大很深奥的话题，甚至不知道该从何写起，这篇博客的逻辑可能会比较乱。在计算机科学领域，我们通常认为并发，要么是多个任务[^task]被分配到了不同的 CPU 上，这些任务同时运行；要么是多个任务被同一个 CPU 交替执行，由于交替的速度很快，这些任务看起来似乎是同时运行的。
@@ -31,7 +29,7 @@ categories: post
 
 [^other]: 想起之前看到过这样一句话，运维的本质在于资源的隔离，不在于资源的扩充。
 
-线程的内存分布基本如下图所示[^thread-mem-layout]，其中粉色区域为线程的栈空间，黄色区域为所有线程可以共享。主线程的栈，ASLR 也会影响内存空间的分布。
+线程的内存分布基本如下图所示[^thread-mem-layout]，其中粉色区域为每个线程的栈空间，黄色区域为所有线程共享。ASLR 会影响内存空间的分布。
 
 
 [^thread-mem-layout]: 主要参考 [CS:APP](https://csapp.cs.cmu.edu/) 9.7.2 小节与 [OSTEP 26 节第 2 页](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)，对于图中细节可参阅这两部分。
