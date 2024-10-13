@@ -46,7 +46,7 @@ useWindowsDnsCache=true
 
 ### 字体
 
-编辑器、IDE 及终端等的字体我一直用 [Hack](https://github.com/source-foundry/Hack)（[下载链接](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Hack.zip)）这款字体。
+编辑器、IDE 及终端等的字体我一直用 [Hack](https://github.com/source-foundry/Hack)（[下载链接](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Hack.zip)）这款。
 
 ### 编辑器配置
 
