@@ -1,0 +1,46 @@
+\documentclass[letterpaper,11pt]{article}
+\usepackage{xeCJK}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[cal=boondoxo, scr=dutchcal]{mathalfa}
+\usepackage{multirow}
+\usepackage[unicode, CJKbookmarks=true]{hyperref}
+
+\numberwithin{equation}{section}
+
+\geometry{a4paper,left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\usepackage{setspace}
+\setstretch{1.1}
+\setlength{\parskip}{0.1\baselineskip}
+
+\usepackage{graphicx}
+\usepackage{caption}
+
+\begin{document}
+
+\title{傅里叶变换}
+\author{张驰}
+\maketitle
+
+\section{傅里叶级数}
+
+二维函数$s(t_1,t_2)$为$t_1$-$t_2$平面内的周期函数，在$t_1$方向的周期为$T_1$，在$t_2$方向的周期为$T_2$，$s(t_1,t_2)$的傅里叶级数为
+\begin{equation}
+    s(t_1,t_2)=a_{00}+\sum_{n=1}^{\infty}\sum_{m=1}^{\infty} \left( a_{mn}\cos(m \omega_1 t_1) \right)
+\end{equation}
+
+\section{泰勒公式}
+
+若函数$f(x)$在区间$(a,b)$具有从$1$至$n+1$阶导数，那么对于$\forall x \in (a,b)$，满足：
+
+\section{欧拉公式}
+
+\begin{equation}
+    e^{ix}=\cos x + i \sin x
+\end{equation}
+
+
+\end{document}
