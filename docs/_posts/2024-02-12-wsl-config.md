@@ -165,6 +165,12 @@ inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
 ``` bash
 # 导入 Neovim 配置
 git clone https://github.com/xdsdmg/neovim-config.git --depth 1 $HOME/.config/nvim
+
+# 安装 gcc
+sudo apt install build-essential
+
+# 安装 Tree-sitter CLI
+npm install -g tree-sitter-cli
 ```
 
 #### tmux
