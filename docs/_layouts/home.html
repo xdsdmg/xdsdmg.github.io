@@ -14,7 +14,7 @@ layout: base
   {% else %}
   {% assign posts = site.posts %}
   {% endif %}
-  <h2 class="post-list-heading">关于</h2>
+  <h2 class="post-list-heading"><b>关于</b></h2>
   <div id="about">
     <div id="intro">
       <p>朋友你好！欢迎来到我的 Blog，我叫张驰，是一名 Computer Science 爱好者，希望能够在计算机世界里做出一些有意思的东西。</p>
@@ -86,7 +86,7 @@ layout: base
     </div>
   </div>
   <div class="line"></div>
-  <h2 class="post-list-heading">文章</h2>
+  <h2 class="post-list-heading"><b>文章</b></h2>
   {%- if posts.size > 0 -%}
   <ul class="post-list">
     {%- assign date_format = site.minima.date_format | default: "%F" -%}
@@ -109,7 +109,7 @@ layout: base
     {%- endfor -%}
   </ul>
 
-  <h2 class="post-list-heading">草稿</h2>
+  <h2 class="post-list-heading"><b>草稿</b></h2>
   <ul class="post-list">
     {%- assign date_format = site.minima.date_format | default: "%F" -%}
     {%- for post in posts -%}
