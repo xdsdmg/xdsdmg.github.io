@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "CPU 虚拟化（WIP）"
+title: "CPU 虚拟化"
 date: 2024-10-20 16:35:09 +0800
-categories: post
+categories: draft 
 ---
 
 ## 前言
