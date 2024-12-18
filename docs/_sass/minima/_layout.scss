@@ -7,7 +7,8 @@
   width: 100%;
 
   # background-color: white;
-  background-color: #283f44;
+  # background-color: #283f44;
+  background-color: #1F3340;
   border-bottom: 1px solid $border-color-01;
 }
 
@@ -44,11 +45,14 @@
   //   color: $site-title-color;
   // }
 
-  color: #F3FED0;
+  // color: #F3FED0;
+  // color: #BCC6D0;
+  color: #F3EED4;
 
   &:hover {
     text-decoration: none;
-    color: #F3FED0;
+    // color: #F3FED0;
+    color: #F3EED4;
   }
 }
 
@@ -74,7 +78,8 @@
 
 .page-link-list a {
   // color: #424242;
-  color: #F3FED0;
+  // color: #F3FED0;
+  color: #F3EED4;
   font-weight: 500;
 
   &:hover {
