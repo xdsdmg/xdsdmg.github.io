@@ -18,7 +18,8 @@ $lm-site-title-color:      $lm-brand-color-dark !default;
 
 $lm-text-color:            #111111 !default;
 $lm-background-color:      #fdfdfd !default;
-$lm-code-background-color: #eeeeff !default;
+// $lm-code-background-color: #eeeeff !default;
+$lm-code-background-color: #eae3c3 !default;
 
 $lm-link-base-color:       #2a7ae2 !default;
 $lm-link-visited-color:    darken($lm-link-base-color, 15%) !default;
@@ -40,14 +41,14 @@ $lm-table-border-color:    $lm-border-color-01 !default;
 
 @mixin lm-highlight {
   .highlight {
-    .c     { color: #998; font-style: italic } // Comment
+    .c     { color: #4e5969; font-style: italic } // Comment
     .err   { color: #a61717; background-color: #e3d2d2 } // Error
     .k     { font-weight: bold } // Keyword
     .o     { font-weight: bold } // Operator
-    .cm    { color: #998; font-style: italic } // Comment.Multiline
-    .cp    { color: #999; font-weight: bold } // Comment.Preproc
-    .c1    { color: #998; font-style: italic } // Comment.Single
-    .cs    { color: #999; font-weight: bold; font-style: italic } // Comment.Special
+    .cm    { color: #4e5969; font-style: italic } // Comment.Multiline
+    .cp    { color: #4e5969; } // Comment.Preproc
+    .c1    { color: #4e5969; font-style: italic } // Comment.Single
+    .cs    { color: #4e5969; font-weight: bold; font-style: italic } // Comment.Special
     .gd    { color: #000; background-color: #fdd } // Generic.Deleted
     .gd .x { color: #000; background-color: #faa } // Generic.Deleted.Specific
     .ge    { font-style: italic } // Generic.Emph
