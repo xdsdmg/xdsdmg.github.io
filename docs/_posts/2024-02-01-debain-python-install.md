@@ -40,6 +40,10 @@ make install
 # 选择合适的版本
 wget https://www.python.org/ftp/python/3.12.5/Python-3.12.5.tgz
 
+tar -zxvf Python3-3.12.5.tgz -C $HOME/workarea/modules
+
+cd $HOME/workarea/modules
+
 ./configure --prefix=/usr/local \
     --with-openssl=$HOME/workarea/modules/ssl \
     --with-openssl-rpath=$HOME/workarea/modules/ssl/lib \
@@ -56,5 +60,25 @@ make install
 ``` bash
 alias py3="/usr/local/bin/python3"
 alias pip="/usr/local/bin/pip3"
+```
+
+### 卸载 Python3
+
+``` bash
+# 清理 /usr/local/bin 目录
+sudo rm /usr/local/bin/2to3*
+sudo rm /usr/local/bin/pip*
+sudo rm /usr/local/bin/pydoc3*
+sudo rm /usr/local/bin/python*
+sudo rm /usr/local/bin/idle*
+
+# 清理 /usr/local/include 目录
+sudo rm -rf /usr/local/include/python3.12
+
+# 清理 /usr/local/lib 目录
+sudo rm /usr/local/lib/libpython3*
+sudo rm /usr/local/lib/python3*
+sudo rm -rf /usr/local/lib/python3*
+sudo rm -rf /usr/local/lib/pkgconfig
 ```
 
