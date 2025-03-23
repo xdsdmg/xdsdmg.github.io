@@ -4,7 +4,7 @@ This is my personal blog.
 
 ## Requirements
 
-- [jekyll](https://jekyllrb.com/)
+> [Jekyll Quickstart](https://jekyllrb.com/docs/)
 
 tips:
 
