@@ -1,0 +1,55 @@
+---
+layout: base
+---
+
+<div style="margin-top: 15px;">
+    <img style="border-radius: 8px;" src="/assets/imgs/bg/storage_box_bg.png">
+</div>
+<div class="line"></div>
+{% assign posts = site.storage_box | sort: post.date | reverse %}
+<div class="home">
+    {%- if posts.size > 0 -%}
+    <h2 class="post-list-heading"><b>文章</b></h2>
+    <ul class="post-list">
+        {%- assign date_format = site.minima.date_format | default: "%F" -%}
+        {%- for post in posts -%}
+        {%- assign flag = 1 -%}
+        {%- for c in post.categories -%}
+        {% if flag == 1 and c == "post" %}
+        <li>
+            <a class="post-link" href="{{ post.url | relative_url }}">
+                {{ post.title | escape }}
+            </a>
+            <span class="post-meta">{{ post.date | date: date_format }}</span>
+            {%- if site.show_excerpts -%}
+            {{ post.excerpt }}
+            {%- endif -%}
+        </li>
+        {%- assign flag = 0 -%}
+        {% endif %}
+        {%- endfor -%}
+        {%- endfor -%}
+    </ul>
+    <h2 class="post-list-heading"><b>草稿</b></h2>
+    <ul class="post-list">
+        {%- assign date_format = site.minima.date_format | default: "%F" -%}
+        {%- for post in posts -%}
+        {%- assign flag = 1 -%}
+        {%- for c in post.categories -%}
+        {% if flag == 1 and c == "draft" %}
+        <li>
+            <a class="post-link" href="{{ post.url | relative_url }}">
+                {{ post.title | escape }}
+            </a>
+            <span class="post-meta">{{ post.date | date: date_format }}</span>
+            {%- if site.show_excerpts -%}
+            {{ post.excerpt }}
+            {%- endif -%}
+        </li>
+        {%- assign flag = 0 -%}
+        {% endif %}
+        {%- endfor -%}
+        {%- endfor -%}
+    </ul>
+    {%- endif %}
+</div>

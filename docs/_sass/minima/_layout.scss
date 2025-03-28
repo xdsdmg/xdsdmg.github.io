@@ -25,7 +25,7 @@
 
 .header-body {
   display: grid;
-  grid-template-columns: 200px auto 70px;
+  grid-template-columns: 200px auto 200px;
   grid-template-areas: "site-title none link";
 }
 
@@ -81,6 +81,7 @@
 .page-link-list a {
   // color: #424242;
   // color: #F3FED0;
+  margin-left: 15px;
   color: #F3EED4;
   font-weight: 500;
 
