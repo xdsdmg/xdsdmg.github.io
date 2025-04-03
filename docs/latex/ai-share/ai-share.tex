@@ -19,6 +19,13 @@
 \usepackage{graphicx}
 \usepackage{caption}
 
+\usepackage[backend=biber, style=ieee]{biblatex}
+\addbibresource{ref.bib}
+
+% 可选：设置URL显示样式
+\urlstyle{APACsame} % 使URL使用正文字体
+\def\UrlFont{\rmfamily} % 使用罗马字体而非等宽字体
+
 \begin{document}
 
 \title{AI分享}
@@ -41,7 +48,16 @@
 \section{大模型的工作原理}
 
 在阐述大模型相关的技术与工具前，需要大家首先对大模型的工作原理有一定了解。
-对于大模型的详细工作原理可参阅文献。
-其实大模型的工作原理很简单，就是四个字“文字接龙”，大模型根据输入的 Prompt 计算出下一个可能的字或词，再用此 Prompt 附加上新产生的字或词作为大模型新的输入，重复此过程直至得到完整的结果，大模型的简易工作原理如下图所示：
+对于大模型的详细工作原理可参阅文献\cite{alammar2018transformer}。
+其实大模型的工作原理很简单，就是四个字“文字接龙”，大模型根据输入的 Prompt 计算出下一个可能的字或词，再用此 Prompt 附加上新产生的字或词作为大模型新的输入，重复此过程直至得到完整的结果，大模型的简易工作原理如图所示。
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../../assets/imgs/ai_share/llm_workflow.png}
+    \caption{大模型的工作流程}
+    \label{llm-workflow}
+\end{figure}
+
+\printbibliography[title={引用}]
 
 \end{document}
