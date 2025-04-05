@@ -18,13 +18,11 @@
 
 \usepackage{graphicx}
 \usepackage{caption}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
 
 \usepackage[backend=biber, style=ieee]{biblatex}
 \addbibresource{ref.bib}
-
-% 可选：设置URL显示样式
-\urlstyle{APACsame} % 使URL使用正文字体
-\def\UrlFont{\rmfamily} % 使用罗马字体而非等宽字体
 
 \begin{document}
 
@@ -40,23 +38,31 @@
 
 \section{引子}
 
-近年，AI对不少行业都形成了一定的冲击，大家对AI的热情也愈发高涨。
-写这篇文章的目的是希望以简单直观的方式介绍大模型领域的常见概念，比如各种时髦的名词与新兴技术（像是AI Agent、Function Call、MCP等）。
-帮助大家了解当前的热点技术与工具，当工作中涉及AI时，可以有一定的判断。
-这篇文章主要讲解大模型相关技术与工具的背景、功能与使用场景，对于这些背后的原理只做简单阐述，如果有兴趣可以进一步阅读参考链接。
+近年，AI对不少行业都形成了一定的影响，大家对AI的热情也愈发高涨。
+希望通过这篇文章以简单直观的方式介绍大模型领域的常见概念、各种时髦的名词及新兴技术（像是AI Agent、Function Call、MCP等），帮助大家了解当前的热点技术与工具，当工作中涉及AI时，可以有一定的判断。
+这篇文章主要讲解大模型相关技术与工具的背景、功能与使用场景，对于这些背后的原理只做简单阐述，如有兴趣可以进一步阅读参考文献。
 
 \section{大模型的工作原理}
 
 在阐述大模型相关的技术与工具前，需要大家首先对大模型的工作原理有一定了解。
 对于大模型的详细工作原理可参阅文献\cite{alammar2018transformer}。
-其实大模型的工作原理很简单，就是四个字“文字接龙”，大模型根据输入的 Prompt 计算出下一个可能的字或词，再用此 Prompt 附加上新产生的字或词作为大模型新的输入，重复此过程直至得到完整的结果，大模型的简易工作原理如图所示。
+其实大模型的工作原理很简单，就是四个字“文字接龙”，大模型根据输入的Prompt计算出下一个可能的字或词，再用此Prompt附加上新产生的字或词作为大模型新的输入，重复此过程直至得到完整的结果，大模型的简易工作原理如图\ref{fig:llm-workflow}所示：
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{../../assets/imgs/ai_share/llm_workflow.png}
+    \includegraphics[width=0.6\textwidth, height=12cm, keepaspectratio]{../../assets/imgs/ai_share/llm_workflow.pdf}
     \caption{大模型的工作流程}
-    \label{llm-workflow}
+    \label{fig:llm-workflow}
 \end{figure}
+
+举个例子，如果向大模型输入Prompt“今天天气怎么样？”，大模型大概会按以下流程进行工作并输出结果：
+\begin{enumerate}
+    \item 分词，大模型首先对Prompt进行分词处理，将其分解为token序列“今天”、“天气”、“怎么样”与“？”，对于分词的详细介绍可参阅文献\cite{glan2023tokenizer}，另外Hugging Face也提供了一个Tokenizer的Rust实现\cite{huggingface_tokenizers}；
+    \item 词嵌入\footnote{这里大家可能会有疑问，这个功能是将token转化为向量，那为什么不叫作“向量化”，而是叫作“词嵌入”呢？“词嵌入”这个词最早出现于Google AI在2013年提出的Word2vec模型\cite{mikolov2013efficientestimationwordrepresentations}，词嵌入旨在将每个词赋予唯一的量化值，并且语义较近的词的量化值间的距离应当近，语义较远的词的量化值间的距离应当远，另外每个词在不同的上下文中可能会有不同的语义，为了承载语义的复杂性，量化值通常是多维向量，这里推荐阅读文献\cite{constantine2023wordembedding}。}，大模型随后对token进行词嵌入处理，将每个token转化为一个向量，比如“今天”被转化为向量$[1.1, 1.2, 2.0]$；
+    \item 预测，大模型再将向量输入至神经网络进行计算得到一个新的token，如“今天”；
+    \item 附加，大模型再将新的token附加至之前的token序列，得到新的token序列“今天”、“天气”、“怎么样”、“？”与“今天”；
+    \item 重复步骤2-4直至得到最终结果。
+\end{enumerate}
 
 \printbibliography[title={引用}]
 
