@@ -37,11 +37,7 @@ b {
 body {
   font: $base-font-weight #{$base-font-size}/#{$base-line-height} $base-font-family;
   color: $text-color;
-  // background-color: $background-color;
-  // background-color: #c9cdd4;
-  // background-color: #F3FED0;
   background-color: #F3EED4;
-  // background-color: #FFFDF0;
   -webkit-text-size-adjust: 100%;
   -webkit-font-feature-settings: "kern" 1;
   -moz-font-feature-settings: "kern" 1;
@@ -50,13 +46,9 @@ body {
   font-kerning: normal;
   display: flex;
   min-height: 100vh;
-  min-width: 1500px;
   flex-direction: column;
   overflow: hidden;
   overflow-wrap: break-word;
-  // font-family: Georgia, serif;
-  // font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  // font-family: LarkHackSafariFont, LarkEmojiFont, LarkChineseQuote, -apple-system, BlinkMacSystemFont, Helvetica Neue, Tahoma, PingFang SC, Microsoft Yahei, Arial, Hiragino Sans GB, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
   font-family: source sans pro, sans-serif;
   height: 100%;
 }
@@ -236,19 +228,28 @@ pre {
 /**
  * Wrapper
  */
+// .wrapper {
+//   max-width: calc(#{$content-width} - (#{$spacing-unit}));
+//   margin-right: auto;
+//   margin-left: auto;
+//   padding-right: $spacing-unit * .5;
+//   padding-left: $spacing-unit * .5;
+//   @extend %clearfix;
+
+//   @media screen and (min-width: $on-large) {
+//     max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
+//     padding-right: $spacing-unit;
+//     padding-left: $spacing-unit;
+//   }
+// }
+
 .wrapper {
-  max-width: calc(#{$content-width} - (#{$spacing-unit}));
   margin-right: auto;
   margin-left: auto;
-  padding-right: $spacing-unit * .5;
-  padding-left: $spacing-unit * .5;
-  @extend %clearfix;
 
-  @media screen and (min-width: $on-large) {
-    max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
-    padding-right: $spacing-unit;
-    padding-left: $spacing-unit;
-  }
+  max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
+  padding-right: $spacing-unit;
+  padding-left: $spacing-unit;
 }
 
 /**

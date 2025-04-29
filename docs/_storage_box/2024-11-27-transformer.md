@@ -5,6 +5,13 @@ date: 2024-11-27 20:13:09 +0800
 categories: draft 
 ---
 
+<div align="center">
+<img src="/assets/imgs/transformer/arch.png" width="60%"/>
+</div>
+<div align="center">
+<span style="font-size: 14px">图 1：Transformer 模型架构</span>
+</div>
+
 {% 
 assign eq =
 '$$

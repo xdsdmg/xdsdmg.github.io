@@ -6,8 +6,8 @@
   line-height: $base-line-height * $base-font-size * 2.25;
   width: 100%;
 
-  # background-color: white;
-  # background-color: #283f44;
+  // background-color: white;
+  // background-color: #283f44;
   background-color: #1F3340;
   border-bottom: 1px solid $border-color-01;
 }
@@ -347,10 +347,15 @@
   }
 }
 
+@media (min-width: 1500px) {
+  #table-of-contents {
+    position: fixed;
+    left: $spacing-unit;
+    top: $spacing-unit * 2.865;
+  }
+}
+
 #table-of-contents {
-  position: fixed;
-  left: $spacing-unit;
-  top: $spacing-unit * 2.865;
   font-size: 1rem;
   width: 10 * $spacing-unit;
 }
