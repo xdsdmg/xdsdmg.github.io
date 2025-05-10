@@ -25,11 +25,40 @@ categories: draft
 
 #### **Transformer 想解决什么问题**
 
-当时主流的序列转换模型是基于 encoder-decoder 架构的 RNN 或 CNN。对于 RNN，RNN 无法较好地实现并行化；对于 CNN，CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
+当时主流的序列转换模型是基于 encoder-decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
 
 Transformer 主要想达到这两个目标：
 1. 能够较好地支持并行化；
 2. 能够很方便地计算输入序列与输出序列的不同位置间的依赖程度的。
+
+### **Transformer 工作原理**
+
+Transformer 模型
+
+<div align="center">
+<img src="/assets/imgs/transformer/arch.png" width="60%"/>
+</div>
+<div align="center">
+<span style="font-size: 14px">图 1：Transformer 模型架构</span>
+</div>
+
+$W_Q \in \mathbb{R}^{d_{\rm{model}} \times d_k}$、$W_K \in \mathbb{R}^{d_{\rm{model}} \times d_k}$、$W_V \in \mathbb{R}^{d_{\rm{model}} \times d_v}$、$X \in \mathbb{R}^{d_l \times d_k}$、$X^T = [x_1; x_2; \dots ; x_{d_l} ]$
+
+$$
+Q = W_Q X^T = [q_1; q_2; \dots ; q_{d_l}] \in \mathbb{R}^{d_{\rm{model}} \times d_l}
+$$
+
+$$
+K = W_K X^T \in \mathbb{R}^{d_{\rm{model}} \times d_l}
+$$
+
+$$
+V = W_V X^T \in \mathbb{R}^{d_{\rm{model}} \times d_l}
+$$
+
+$$
+{\rm Attention}(Q, K, V) = {\rm softmax}(\frac{Q^TK}{\sqrt{d_k}})V^T \in \mathbb{R}^{ d_l \times d_{\rm{model}}}
+$$
 
 $$
 Z=f(X)
@@ -39,13 +68,21 @@ $$
 y_t = f(\{y_1，y_2,\cdots,y_{t-1}\},Z)
 $$
 
+#### **LayerNorm**
 
-<div align="center">
-<img src="/assets/imgs/transformer/arch.png" width="60%"/>
-</div>
-<div align="center">
-<span style="font-size: 14px">图 1：Transformer 模型架构</span>
-</div>
+对于$x\in\mathbb{R}^d$
+
+$$
+\mu = \frac{1}{d} \sum^d_{i=1} x_i
+$$
+
+$$
+\sigma^2 = \frac{1}{d} \sum^d_{i=1} (x_i - \mu)^2
+$$
+
+$$
+\hat{x}_i = \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}}
+$$
 
 {% 
 assign eq =
