@@ -97,3 +97,18 @@ $$'
 %}
 
 {{eq}}
+
+Collectively, these developments have ushered in an era where scaling model size and computational power is seen as the key to unlocking higher levels of intelligence.
+
+只加大模型的尺寸没有被证明可以提升模型的推理能力（思维链）。
+
+如何激发模型的能量？Rason Path
+
+涌现能力，一种能力在较小的模型中不存在，但在较大的模型中存在。
+
+<div align="center">
+<img src="/assets/imgs/transformer/llm_timeline.jpg" width="40%"/>
+</div>
+<div align="center">
+<span style="font-size: 14px">LLM 时间线</span>
+</div>
