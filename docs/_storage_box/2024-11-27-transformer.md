@@ -106,9 +106,8 @@ Collectively, these developments have ushered in an era where scaling model size
 
 涌现能力，一种能力在较小的模型中不存在，但在较大的模型中存在。
 
-<div align="center">
-<img src="/assets/imgs/transformer/llm_timeline.jpg" width="40%"/>
-</div>
-<div align="center">
-<span style="font-size: 14px">LLM 时间线</span>
-</div>
+大模型的发展历史
+
+1. nlp 的 通用设计
+2. Transformer 诞生的历史背景
+3. GPT、GPT2、GPT3、DeepSeek 技术发生了哪些变化，训练和推理架构设计方法的变化
