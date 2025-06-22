@@ -58,41 +58,9 @@ Embedding 的核心任务是将每个 token 映射为一个稠密向量（Dense 
 
 > [《Attention Is All You Need》](https://arxiv.org/pdf/1706.03762) 摘要：<br> The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an **attention mechanism**. <br>  <br> 翻译： <br> 主流的序列转换模型基于复杂的递归或卷积神经网络，其中包括一个编码器和一个解码器。性能最好的模型还通过注意力机制将编码器和解码器连接起来。
 
-#### **Encoder-Decoder 架构**
+#### **注意力机制**
 
-> [视频-61 编码器-解码器架构【动手学深度学习v2】](https://www.bilibili.com/video/BV1c54y1E7YP?spm_id_from=333.788.videopod.episodes&vd_source=30199bd82fc917072f79b98bb0ab9c36)
-
-
-在 Transformer 诞生的那个年代（2017 年），NLP 领域中主流的 seq2seq 模型都采用 Encoder-Decoder 架构。这种架构的设计理念并不难理解，可以表示为如下形式：
-
-$$
-\begin{equation}
-\begin{aligned}
-H & = f_{\rm encoder}(X) \\
-\mathbf{y}_t & = f_{\rm decoder}(H, [\mathbf{y}_1; \mathbf{y}_2; \dots ; \mathbf{y}_{t-1}])
-\end{aligned}
-\end{equation}
-$$
-
-其中，$f_{\rm encoder}$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H = [\mathbf{h}\_1; \mathbf{h}\_2; \dots ; \mathbf{h}\_n]$，通常 $\mathbf{h}\_i$ 对应 $\mathbf{x}\_i$；$f_{\rm decoder}$ 表示模型的 decoder 模块，$f_{\rm decoder}$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
-
-> 注：<br> **自回归（Auto-Regressive，AR）**：是一种序列生成方法，其核心特征是：当前时刻的输出仅依赖于过去时刻的生成结果，并通过逐步迭代的方式构造完整序列。从概率建模的角度，这一过程可形式化表示为联合概率的链式分解 $$P(\mathbf{y}_{1:n}) = P(\mathbf{y}_1) \prod^n_{t = 2} P(\mathbf{y}_{t} \mid \mathbf{y}_{1:t-1})$$。另外，自回归过程也可以看作马尔科夫链的广义形式。
-
-对于 encoder 与 decoder，其实是按照功能对深度神经网络中的模块（或层）进行划分，通俗来讲，encoder 负责将输入转化为机器可理解的某种表示（中间状态），decoder 负责将这种表示转化为人类可理解的结果。
-
-这里有个疑问，为什么有些模型无 encoder 与 decoder 一说？比如图像分类模型，以及什么样的模型适合使用 encoder 与 decoder？
-
-深度神经网络可以视为一个非常复杂的函数，这个函数负责实现输入空间与输出空间之间的映射，当输出空间的结构较为简单或固定时，是无需特别在意 encoder 与 decoder 这些概念的，比如图像分类模型的输出仅仅是一个类型标签。但对于序列转换模型，它的输出长度是不确定的，输出空间较为复杂，实现思路通常是先将输入序列转化为内部表示，在基于内部表示自回归生成结果，且在生成过程中需考虑输入序列与输出序列的不同位置间的依赖（或关联）程度。
-
-#### **Transformer 想解决什么问题**
-
-当时主流的序列转换模型是基于 encoder-decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
-
-Transformer 主要想达到这两个目标：
-1. 能够较好地支持并行化；
-2. 能够很方便地计算输入序列与输出序列的不同位置间的依赖程度的。
-
-### **注意力机制**
+注意力机制并不是在深度学习领域诞生的，甚至最早可以追溯至上世纪 60 年代的统计学算法 [Nadaraya-Watson 核回归（1964）](https://en.wikipedia.org/wiki/Kernel_regression)。
 
 - 不随意线索 CNN
 - 随意线索 Attention
@@ -122,6 +90,50 @@ $$
 $$
 K({\bf k}, {\bf q}) = \frac{1}{\sqrt{d}} {\bf k} \cdot {\bf q}
 $$
+
+#### **Encoder-Decoder 架构**
+
+> [视频-61 编码器-解码器架构【动手学深度学习v2】](https://www.bilibili.com/video/BV1c54y1E7YP?spm_id_from=333.788.videopod.episodes&vd_source=30199bd82fc917072f79b98bb0ab9c36)
+
+
+在 Transformer 诞生的那个年代（2017 年），NLP 领域中主流的 seq2seq 模型都采用 Encoder-Decoder 架构。这种架构的设计理念并不难理解，可以表示为如下形式：
+
+$$
+\begin{equation}
+\begin{aligned}
+H & = f_{\rm encoder}(X) \\
+\mathbf{y}_t & = f_{\rm decoder}(H, [\mathbf{y}_1; \mathbf{y}_2; \dots ; \mathbf{y}_{t-1}])
+\end{aligned}
+\end{equation}
+$$
+
+其中，$f_{\rm encoder}$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H = [\mathbf{h}\_1; \mathbf{h}\_2; \dots ; \mathbf{h}\_n]$，通常 $\mathbf{h}\_i$ 对应 $\mathbf{x}\_i$；$f_{\rm decoder}$ 表示模型的 decoder 模块，$f_{\rm decoder}$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
+
+> 注：<br> **自回归（Auto-Regressive，AR）**：是一种序列生成方法，其核心特征是：当前时刻的输出仅依赖于过去时刻的生成结果，并通过逐步迭代的方式构造完整序列。从概率建模的角度，这一过程可形式化表示为联合概率的链式分解 $$P(\mathbf{y}_{1:n}) = P(\mathbf{y}_1) \prod^n_{t = 2} P(\mathbf{y}_{t} \mid \mathbf{y}_{1:t-1})$$。另外，自回归过程也可以看作马尔科夫链的广义形式。
+
+举个例子，当我们进行中英翻译时，通常会先通读整个中文句子，形成整体理解（即建立"语义表征"），然后基于这个理解逐步生成英文表达。这个认知过程恰好对应了 encoder-decoder 架构的工作机制：  
+- 编码阶段（$f_{\rm encoder}$）：通过阅读理解源语句，将其抽象为包含关键语义信息的中间表征（即您所说的"印象"）；
+- 解码阶段（$f_{\rm decoder}$）：根据该语义表征，按目标语言规则逐步生成译文。
+
+这种"先理解，再表达"的两阶段处理方式，正是现代机器翻译系统模仿人类翻译思维的核心设计。
+
+对于 encoder 与 decoder，其实是按照功能对深度神经网络中的模块（或层）进行划分，通俗来讲，encoder 负责将输入转化为机器可理解的某种表示（中间状态），decoder 负责将这种表示转化为人类可理解的结果。
+
+这里有个疑问，为什么有些模型无 encoder 与 decoder 一说？比如图像分类模型，以及什么样的模型适合使用 encoder 与 decoder？
+
+深度神经网络可以视为一个非常复杂的函数，这个函数负责实现输入空间与输出空间之间的映射，当输出空间的结构较为简单或固定时，是无需特别在意 encoder 与 decoder 这些概念的，比如图像分类模型的输出仅仅是一个类型标签。但对于序列转换模型，它的输出长度是不确定的，输出空间较为复杂，实现思路通常是先将输入序列转化为内部表示，在基于内部表示自回归生成结果，且在生成过程中需考虑输入序列与输出序列的不同位置间的依赖（或关联）程度。
+
+#### **Transformer 想解决什么问题**
+
+当时主流的序列转换模型是基于 encoder-decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
+
+Transformer 主要想达到这两个目标：
+1. 能够较好地支持并行化；
+2. 能够很方便地计算输入序列与输出序列的不同位置间的依赖程度的。
+
+### **注意力机制**
+
+
 
 #### **Self-Attention**
 
