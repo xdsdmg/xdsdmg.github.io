@@ -22,9 +22,9 @@ categories: draft
 
 > 计算机是如何对文字进行计算的呢？文字是无法直接参与数学计算的，计算机究竟对文字进行了哪些处理？
 
-Transformer 是一种主要应用于自然语言处理（NLP）领域的 seq2seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学向量，这一步骤是所有 NLP 模型的基础和关键。
+Transformer 是一种主要应用于自然语言处理（NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学向量，这一步骤是所有 NLP 模型的基础和关键。
 
-> 注：<br> **seq2seq 模型**：在 NLP 中，seq2seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
+> 注：<br> **Seq2Seq 模型**：在 NLP 中，Seq2Seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
 
 计算机通过分词（Tokenization）与词嵌入（Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学向量。
 
@@ -54,11 +54,53 @@ Embedding 的核心任务是将每个 token 映射为一个稠密向量（Dense 
 
 推荐阅读：[没有思考过 Embedding，不足以谈 AI]( https://zhuanlan.zhihu.com/p/643560252)
 
-### **2. Transformer 诞生的历史背景**
+### **3. Transformer 诞生的历史背景**
 
 > [《Attention Is All You Need》](https://arxiv.org/pdf/1706.03762) 摘要：<br> The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an **attention mechanism**. <br>  <br> 翻译： <br> 主流的序列转换模型基于复杂的递归或卷积神经网络，其中包括一个编码器和一个解码器。性能最好的模型还通过注意力机制将编码器和解码器连接起来。
 
-#### **注意力机制**
+#### **3.1 Encoder-Decoder 架构**
+
+> 1. 什么是 Encoder-Decoder 架构？
+> 2. 为什么主流的 Seq2Seq 模型都采用 Encoder-Decoder 架构？
+
+在 Transformer 诞生的那个年代（2017 年），NLP 领域中主流的 Seq2Seq 模型都采用 Encoder-Decoder 架构。这种架构的设计理念并不难理解，可以表示为如下形式：
+
+$$
+\begin{equation}
+\begin{aligned}
+H & = f_{\rm encoder}(X) \\
+\mathbf{y}_t & = f_{\rm decoder}(H, [\mathbf{y}_1; \mathbf{y}_2; \dots ; \mathbf{y}_{t-1}])
+\end{aligned}
+\end{equation}
+$$
+
+其中，$f_{\rm encoder}$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H$；$f_{\rm decoder}$ 表示模型的 decoder 模块，$f_{\rm decoder}$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
+
+> 注：<br> **自回归（Auto-Regressive，AR）**：是一种序列生成方法，其核心特征是：当前时刻的输出仅依赖于过去时刻的生成结果，并通过逐步迭代的方式构造完整序列。从概率建模的角度，这一过程可形式化表示为联合概率的链式分解 $$P(\mathbf{y}_{1:n}) = P(\mathbf{y}_1) \prod^n_{t = 2} P(\mathbf{y}_{t} \mid \mathbf{y}_{1:t-1})$$。另外，自回归过程也可以看作马尔科夫链的广义形式。
+
+举个例子，当我们进行中英翻译时，通常会先通读整个中文句子，形成整体理解（即建立"语义表征"），然后基于这个理解逐步生成英文表达。这个认知过程恰好对应了 encoder-decoder 架构的工作机制：  
+- 编码阶段（$f_{\rm encoder}$）：通过阅读理解源语句，将其抽象为包含关键语义信息的中间表征（即您所说的"印象"）；
+- 解码阶段（$f_{\rm decoder}$）：根据该语义表征，按目标语言规则逐步生成译文。
+
+这种“先理解，再表达”的两阶段处理方式，正是现代机器翻译系统模仿人类翻译思维的核心设计。
+
+对于 encoder 与 decoder，其实是按照功能对深度神经网络中的模块（或层）进行划分，通俗来讲，encoder 负责将输入转化为机器可理解的某种表示（中间状态），decoder 负责将这种表示转化为人类可理解的结果。
+
+这里有个疑问，为什么有些模型无 encoder 与 decoder 一说？比如图像分类模型，以及什么样的模型适合使用 encoder 与 decoder？
+
+深度神经网络可以视为一个非常复杂的函数，这个函数负责实现输入空间与输出空间之间的映射，当输出空间的结构较为简单或固定时，是无需特别在意 encoder 与 decoder 这些概念的，比如图像分类模型的输出仅仅是一个类型标签。但对于序列转换模型，它的输出长度是不确定的，输出空间较为复杂，实现思路通常是先将输入序列转化为内部表示，在基于内部表示自回归生成结果，且在生成过程中需考虑输入序列与输出序列的不同位置间的依赖（或关联）程度。
+
+> 推荐资料：[视频-61 编码器-解码器架构【动手学深度学习v2】](https://www.bilibili.com/video/BV1c54y1E7YP?spm_id_from=333.788.videopod.episodes&vd_source=30199bd82fc917072f79b98bb0ab9c36)
+
+#### **3.2 注意力机制**
+
+> 注意力机制能够为 Encoder-Decoder 架构带来哪些提升？
+
+在早期使用 RNN 或 CNN 构建的基于 Encoder-Decoder 架构的 Seq2Seq 模型中，自回归生成过程存在显著的上下文对齐局限性。具体表现为：解码器在生成目标序列的每一个 token 时，仅能隐式地依赖编码器输出的固定长度上下文表示（如 RNN 的最终隐藏状态或 CNN 的顶层特征），而无法显式建模当前生成位置与输入序列关键片段之间的动态关联关系。这种机制缺陷在 NLP 任务中会导致两类典型问题：
+1. 长距离依赖丢失，尤其是当输入序列较长时，编码器的信息压缩瓶颈会削弱关键输入的保留；
+2. 局部强相关忽略，例如在机器翻译任务中，生成目标语言动词时可能无法精准关联源语言中对应的谓语成分。
+
+这一局限性的本质原因在于传统 Encoder-Decoder 架构的静态编码特性：编码阶段将变长输入序列压缩为固定维度的向量（Context Vector），而解码阶段缺乏对该向量的细粒度访问机制。直到注意力机制的引入，才通过计算解码器当前状态与编码器所有状态的动态权重（Alignment Scores）解决了这一问题。
 
 注意力机制并不是在深度学习领域诞生的，甚至最早可以追溯至上世纪 60 年代的统计学算法 [Nadaraya-Watson 核回归（1964）](https://en.wikipedia.org/wiki/Kernel_regression)。
 
@@ -90,38 +132,6 @@ $$
 $$
 K({\bf k}, {\bf q}) = \frac{1}{\sqrt{d}} {\bf k} \cdot {\bf q}
 $$
-
-#### **Encoder-Decoder 架构**
-
-> [视频-61 编码器-解码器架构【动手学深度学习v2】](https://www.bilibili.com/video/BV1c54y1E7YP?spm_id_from=333.788.videopod.episodes&vd_source=30199bd82fc917072f79b98bb0ab9c36)
-
-
-在 Transformer 诞生的那个年代（2017 年），NLP 领域中主流的 seq2seq 模型都采用 Encoder-Decoder 架构。这种架构的设计理念并不难理解，可以表示为如下形式：
-
-$$
-\begin{equation}
-\begin{aligned}
-H & = f_{\rm encoder}(X) \\
-\mathbf{y}_t & = f_{\rm decoder}(H, [\mathbf{y}_1; \mathbf{y}_2; \dots ; \mathbf{y}_{t-1}])
-\end{aligned}
-\end{equation}
-$$
-
-其中，$f_{\rm encoder}$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H = [\mathbf{h}\_1; \mathbf{h}\_2; \dots ; \mathbf{h}\_n]$，通常 $\mathbf{h}\_i$ 对应 $\mathbf{x}\_i$；$f_{\rm decoder}$ 表示模型的 decoder 模块，$f_{\rm decoder}$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
-
-> 注：<br> **自回归（Auto-Regressive，AR）**：是一种序列生成方法，其核心特征是：当前时刻的输出仅依赖于过去时刻的生成结果，并通过逐步迭代的方式构造完整序列。从概率建模的角度，这一过程可形式化表示为联合概率的链式分解 $$P(\mathbf{y}_{1:n}) = P(\mathbf{y}_1) \prod^n_{t = 2} P(\mathbf{y}_{t} \mid \mathbf{y}_{1:t-1})$$。另外，自回归过程也可以看作马尔科夫链的广义形式。
-
-举个例子，当我们进行中英翻译时，通常会先通读整个中文句子，形成整体理解（即建立"语义表征"），然后基于这个理解逐步生成英文表达。这个认知过程恰好对应了 encoder-decoder 架构的工作机制：  
-- 编码阶段（$f_{\rm encoder}$）：通过阅读理解源语句，将其抽象为包含关键语义信息的中间表征（即您所说的"印象"）；
-- 解码阶段（$f_{\rm decoder}$）：根据该语义表征，按目标语言规则逐步生成译文。
-
-这种"先理解，再表达"的两阶段处理方式，正是现代机器翻译系统模仿人类翻译思维的核心设计。
-
-对于 encoder 与 decoder，其实是按照功能对深度神经网络中的模块（或层）进行划分，通俗来讲，encoder 负责将输入转化为机器可理解的某种表示（中间状态），decoder 负责将这种表示转化为人类可理解的结果。
-
-这里有个疑问，为什么有些模型无 encoder 与 decoder 一说？比如图像分类模型，以及什么样的模型适合使用 encoder 与 decoder？
-
-深度神经网络可以视为一个非常复杂的函数，这个函数负责实现输入空间与输出空间之间的映射，当输出空间的结构较为简单或固定时，是无需特别在意 encoder 与 decoder 这些概念的，比如图像分类模型的输出仅仅是一个类型标签。但对于序列转换模型，它的输出长度是不确定的，输出空间较为复杂，实现思路通常是先将输入序列转化为内部表示，在基于内部表示自回归生成结果，且在生成过程中需考虑输入序列与输出序列的不同位置间的依赖（或关联）程度。
 
 #### **Transformer 想解决什么问题**
 
