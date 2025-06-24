@@ -352,12 +352,12 @@
     position: fixed;
     left: $spacing-unit;
     top: $spacing-unit * 2.865;
+    width: 10 * $spacing-unit;
   }
 }
 
 #table-of-contents {
   font-size: 1rem;
-  width: 10 * $spacing-unit;
 }
 
 #table-of-contents ul {

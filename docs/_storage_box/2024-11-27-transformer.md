@@ -74,13 +74,13 @@ H & = f_{\rm encoder}(X) \\
 \end{equation}
 $$
 
-其中，$f_{\rm encoder}$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H$；$f_{\rm decoder}$ 表示模型的 decoder 模块，$f_{\rm decoder}$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
+其中，$f_{\rm encoder}(\cdot)$ 表示模型的 encoder 模块，$X = [\mathbf{x}\_1; \mathbf{x}\_2; \dots ; \mathbf{x}\_n]$ 表示模型的输入，$\mathbf{x}\_i$ 为第 $i$ 个 token 的向量表示，$f_{\rm encoder}(\cdot)$ 将输入 $X$ 转化为一种可被机器理解的隐藏（或中间）状态 $H$；$f_{\rm decoder}(\cdot, \cdot)$ 表示模型的 decoder 模块，$f_{\rm decoder}(\cdot, \cdot)$ 基于 $H$ 自回归（Auto-Regressive）生成结果，$\mathbf{y}\_i$ 表示生成的第 $i$ 个 token。
 
 > 注：<br> **自回归（Auto-Regressive，AR）**：是一种序列生成方法，其核心特征是：当前时刻的输出仅依赖于过去时刻的生成结果，并通过逐步迭代的方式构造完整序列。从概率建模的角度，这一过程可形式化表示为联合概率的链式分解 $$P(\mathbf{y}_{1:n}) = P(\mathbf{y}_1) \prod^n_{t = 2} P(\mathbf{y}_{t} \mid \mathbf{y}_{1:t-1})$$。另外，自回归过程也可以看作马尔科夫链的广义形式。
 
 举个例子，当我们进行中英翻译时，通常会先通读整个中文句子，形成整体理解（即建立"语义表征"），然后基于这个理解逐步生成英文表达。这个认知过程恰好对应了 encoder-decoder 架构的工作机制：  
-- 编码阶段（$f_{\rm encoder}$）：通过阅读理解源语句，将其抽象为包含关键语义信息的中间表征（即您所说的"印象"）；
-- 解码阶段（$f_{\rm decoder}$）：根据该语义表征，按目标语言规则逐步生成译文。
+- 编码阶段（$f_{\rm encoder}(\cdot)$）：通过阅读理解源语句，将其抽象为包含关键语义信息的中间表征（即您所说的"印象"）；
+- 解码阶段（$f_{\rm decoder}(\cdot, \cdot)$）：根据该语义表征，按目标语言规则逐步生成译文。
 
 这种“先理解，再表达”的两阶段处理方式，正是现代机器翻译系统模仿人类翻译思维的核心设计。
 
@@ -94,7 +94,7 @@ $$
 
 #### **3.2 注意力机制**
 
-> 注意力机制能够为 Encoder-Decoder 架构带来哪些提升？
+##### **3.2.1 注意力机制能够为 Encoder-Decoder 架构带来哪些提升？**
 
 在早期使用 RNN 或 CNN 构建的基于 Encoder-Decoder 架构的 Seq2Seq 模型中，自回归生成过程存在显著的上下文对齐局限性。具体表现为：解码器在生成目标序列的每一个 token 时，仅能隐式地依赖编码器输出的固定长度上下文表示（如 RNN 的最终隐藏状态或 CNN 的顶层特征），而无法显式建模当前生成位置与输入序列关键片段之间的动态关联关系。这种机制缺陷在 NLP 任务中会导致两类典型问题：
 1. 长距离依赖丢失，尤其是当输入序列较长时，编码器的信息压缩瓶颈会削弱关键输入的保留；
@@ -102,36 +102,58 @@ $$
 
 这一局限性的本质原因在于传统 Encoder-Decoder 架构的静态编码特性：编码阶段将变长输入序列压缩为固定维度的向量（Context Vector），而解码阶段缺乏对该向量的细粒度访问机制。直到注意力机制的引入，才通过计算解码器当前状态与编码器所有状态的动态权重（Alignment Scores）解决了这一问题。
 
-注意力机制并不是在深度学习领域诞生的，甚至最早可以追溯至上世纪 60 年代的统计学算法 [Nadaraya-Watson 核回归（1964）](https://en.wikipedia.org/wiki/Kernel_regression)。
+##### **3.2.2 注意力机制的起源**
 
-- 不随意线索 CNN
-- 随意线索 Attention
-
-query 不随意线索，key 是随意线索
-
-60 年代 Nadaraya-Watson 核回归
+注意力机制的雏形并非源自深度学习领域，其理论根源可追溯至 20 世纪 60 年代的统计学习框架——[Nadaraya-Watson 核回归（1964）](https://en.wikipedia.org/wiki/Kernel_regression)。该模型的数学表述为：
 
 $$
-f(x) = \sum^n_{i = 1} \frac{K(x - x_i)}{\sum^n_{j = 1} K(x - x_j)} y_i
+f(x) = \sum^n_{i=1} \alpha(x,x_i) y_i,\quad \alpha(x,x_i) = \frac{K(x - x_i)}{\sum^n_{j=1} K(x - x_j)}
 $$
 
-$K(x, x_i)$ 也称为注意力分数
+其中 $\alpha(x,x_i)$ 可视为一种原始形式的注意力权重。该模型通过核函数 $K(\cdot)$ 构建输入空间上的概率密度估计，给定查询值 $x$ 时，基于训练集 $\{(x_i,y_i)\}_{i=1}^n$ 计算条件期望 $E[y \| x]$。具体而言：
+
+1. **相似度度量**：核函数 $K(x-x_i)$ 本质是衡量查询 $x$ 与键 $x_i$ 的相似性度量，符合注意力机制中 query-key 匹配的核心思想
+2. **权重归一化**：通过 softmax-like 的分母项实现注意力权重的归一化（$\sum_i\alpha(x,x_i)=1$）
+3. **上下文感知**：输出是值 $y_i$ 的加权平均，权重随查询动态变化，这与现代注意力机制完全一致
+
+> 其实 Nadaraya-Watson 核回归和 KNN 算法也有些相似，可以看作是 KNN 算法的概率化表达。
+
+##### **3.2.3 什么是注意力机制**
+
+~~- 不随意线索 CNN~~
+~~- 随意线索 Attention~~
+
+~~query 不随意线索，key 是随意线索~~
+
+注意力机制可视为 Nadaraya-Watson 核回归在神经网络中的推广形式，其核心创新在于：
+1. 将原始核权重 $\alpha$ 重构为 softmax 归一化形式
+2. 输入输出空间从标量推广到高维张量
+3. 引入可学习的特征变换
+
+其通用数学表述为：
 
 $$
-f(x) = \sum^n_{i = 1} {\rm {softmax}}(K(x, x_i)) y_i
+f(\mathbf{q}) = \sum^n_{i=1} \alpha(\mathbf{q}, \mathbf{k}_i)\mathbf{v}_i,\quad 
+\alpha(\mathbf{q}, \mathbf{k}_i) = \mathrm{softmax}(K(\mathbf{q}, \mathbf{k}_i))
 $$
 
-#### **Additive Attention**
+其中，$\mathbf{q} \in \mathbb{R}^d$ 为查询向量（Query），$\mathbf{k}_i \in \mathbb{R}^d$ 为键向量（Key），$\mathbf{v}_i \in \mathbb{R}^m$ 为值向量（Value），$K(\cdot,\cdot)$ 为注意力评分函数。
 
-$$
-K({\bf k}, {\bf q}) = {\bf v}^T \tanh(W_k{\bf k} + W_q{\bf q})
-$$
+现代注意力机制主要采用两种评分函数：
 
-#### **Scaled Dot-Product Attention**
+1. **加性注意力（Additive Attention）**：$K(\mathbf{q}, \mathbf{k}) = \mathbf{w}^T \sigma(\mathbf{W}_q\mathbf{q} + \mathbf{W}_k\mathbf{k})$
+   - 优点：通过全连接层实现跨维度交互，激活函数 $\sigma$（通常为 $\tanh$）提供非线性表达能力；
+   - 缺点：参数量大，计算复杂度高。
 
-$$
-K({\bf k}, {\bf q}) = \frac{1}{\sqrt{d}} {\bf k} \cdot {\bf q}
-$$
+2. **缩放点积注意力（Scaled Dot-Product Attention）**：$K(\mathbf{q}, \mathbf{k}) = \frac{\mathbf{q}^T\mathbf{k}}{\sqrt{d}}$
+   - 优点：计算高效，无需额外参数；
+   - 关键改进：缩放因子 $\sqrt{d}$ 防止高维点积值过大导致梯度消失。
+
+**发展趋势**：
+- 加性注意力在早期 Seq2Seq 模型中表现优异；
+- 缩放点积注意力因计算效率成为 Transformer 架构的标准配置；
+- 大语言模型（LLMs）普遍采用多头缩放点积注意力，通过并行计算实现高效处理长序列。
+
 
 #### **Transformer 想解决什么问题**
 
