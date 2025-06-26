@@ -145,7 +145,7 @@ $$
    - 优点：通过全连接层实现跨维度交互，激活函数 $\sigma$（通常为 $\tanh$）提供非线性表达能力；
    - 缺点：参数量大，计算复杂度高。
 
-2. **缩放点积注意力（Scaled Dot-Product Attention）**：$K(\mathbf{q}, \mathbf{k}) = \frac{\mathbf{q}^T\mathbf{k}}{\sqrt{d}}$
+2. **缩放点积注意力（Scaled Dot-Product Attention）**：$K(\mathbf{q}, \mathbf{k}) = \mathbf{q}^T\mathbf{k} / \sqrt{d}$
    - 优点：计算高效，无需额外参数；
    - 关键改进：缩放因子 $\sqrt{d}$ 防止高维点积值过大导致梯度消失。
 
@@ -155,7 +155,7 @@ $$
 - 大语言模型（LLMs）普遍采用多头缩放点积注意力，通过并行计算实现高效处理长序列。
 
 
-#### **Transformer 想解决什么问题**
+#### **3.3 Transformer 想解决什么问题**
 
 当时主流的序列转换模型是基于 encoder-decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
 
@@ -166,16 +166,17 @@ Transformer 主要想达到这两个目标：
 ### **注意力机制**
 
 
-
 #### **Self-Attention**
 
 ![a](https://zh-v2.d2l.ai/_images/cnn-rnn-self-attention.svg)
 
 
 
-### **Transformer 工作原理**
+### **3. Transformer 工作原理**
 
-Transformer 模型
+Transformer 是一种完全基于注意力机制的 Seq2Seq 模型架构，其核心创新在于完全摒弃了传统的循环神经网络（RNN）和卷积神经网络（CNN），仅依靠自注意力机制（Self-Attention）和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，原论文的标题才命名为"Attention Is All You Need"。
+
+图 1 展示了 Transformer 的整体架构，通过前文的铺垫，相信读者现在能够清晰地理解这个结构设计。
 
 <div align="center">
 <img src="/assets/imgs/transformer/arch.png" width="60%"/>
@@ -184,33 +185,68 @@ Transformer 模型
 <span style="font-size: 14px">图 1：Transformer 模型架构</span>
 </div>
 
-$W_Q \in \mathbb{R}^{d_{\rm{model}} \times d_k}$、$W_K \in \mathbb{R}^{d_{\rm{model}} \times d_k}$、$W_V \in \mathbb{R}^{d_{\rm{model}} \times d_v}$、$X \in \mathbb{R}^{d_l \times d_k}$、$X^T = [x_1; x_2; \dots ; x_{d_l} ]$
+#### **3.1 多头注意力机制**
+
+Transformer 采用了多头注意力机制来增强模型的表达能力。这种机制可以理解为：
+
+1. 将输入序列通过多组不同的线性变换（即多个"头"）并行处理
+2. 每个头学习不同的注意力模式
+3. 最后将所有头的输出拼接并通过线性变换得到最终结果
+
+具体计算过程如下：
+
+首先，对每个输入token进行多组线性投影：
 
 $$
-Q = W_Q X^T = [q_1; q_2; \dots ; q_{d_l}] \in \mathbb{R}^{d_{\rm{model}} \times d_l}
-$$
-
-$$
-K = W_K X^T \in \mathbb{R}^{d_{\rm{model}} \times d_l}
-$$
-
-$$
-V = W_V X^T \in \mathbb{R}^{d_{\rm{model}} \times d_l}
-$$
-
-$$
-{\rm Attention}(Q, K, V) = {\rm softmax}(\frac{Q^TK}{\sqrt{d_k}})V^T \in \mathbb{R}^{ d_l \times d_{\rm{model}}}
-$$
-
-$$
-Z=f(X)
+\mathbf{q}_{i, j} = W^Q_j \mathbf{t}_i
 $$
 
 $$
-y_t = f(\{y_1，y_2,\cdots,y_{t-1}\},Z)
+\mathbf{k}_{i, j} = W^K_j \mathbf{t}_i
 $$
 
-#### **LayerNorm**
+$$
+\mathbf{v}_{i, j} = W^V_j \mathbf{t}_i
+$$
+
+然后，在每个头上计算缩放点积注意力：
+
+$$
+\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}})\mathbf{v}_{k, j}
+$$
+
+最后，将所有头的输出拼接并通过线性变换：
+
+$$
+\mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
+$$
+
+这种设计使得模型能够：
+
+1. 同时关注不同位置的表示子空间
+2. 学习更丰富的上下文依赖关系
+3. 提高模型的泛化能力
+
+#### **3.2 位置编码**
+
+由于自注意力机制本身是位置无关的（permutation invariant），为了保留序列的顺序信息，Transformer 引入了位置编码。具体实现是将位置信息通过正弦/余弦函数编码后直接加到输入嵌入中：
+
+$$
+t_i = t_i + {\rm PE}(i)
+$$
+
+其中位置编码函数的设计满足：
+- 能唯一标识每个位置
+- 能处理比训练时更长的序列
+- 有稳定的梯度传播特性
+
+#### **Add & Norm**
+
+Transformer 在每个子层（自注意力层和前馈网络层）后都采用了：
+1. 残差连接（Add）：将子层输入与输出相加，缓解深层网络梯度消失问题
+2. 层归一化（Norm）：对特征维度进行归一化，稳定训练过程
+
+这种设计使得深层Transformer模型能够稳定训练，是模型成功的关键因素之一。
 
 对于$x\in\mathbb{R}^d$
 
