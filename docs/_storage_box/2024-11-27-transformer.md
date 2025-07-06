@@ -174,9 +174,9 @@ Transformer 主要想达到这两个目标：
 
 ### **3. Transformer 工作原理**
 
-Transformer 是一种完全基于注意力机制的 Seq2Seq 模型架构，其核心创新在于完全摒弃了传统的循环神经网络（RNN）和卷积神经网络（CNN），仅依靠自注意力机制（Self-Attention）和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，原论文的标题才命名为"Attention Is All You Need"。
+Transformer 是一个完全基于注意力机制的 Seq2Seq 模型，其核心创新在于完全摒弃了 RNN 与 CNN，仅依靠自注意力机制和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，原论文的标题才命名为"Attention Is All You Need"。
 
-图 1 展示了 Transformer 的整体架构，通过前文的铺垫，相信读者现在能够清晰地理解这个结构设计。
+图 1 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
 
 <div align="center">
 <img src="/assets/imgs/transformer/arch.png" width="60%"/>
@@ -185,13 +185,26 @@ Transformer 是一种完全基于注意力机制的 Seq2Seq 模型架构，其�
 <span style="font-size: 14px">图 1：Transformer 模型架构</span>
 </div>
 
+接下来我们按 Transformer 模型的主要模块来介绍，主要有多头注意力机制、位置编码、前馈神经网络与 Add & Norm 这几个核心模块。
+
 #### **3.1 多头注意力机制**
 
-Transformer 采用了多头注意力机制来增强模型的表达能力。这种机制可以理解为：
+> 在深度学习中，“头”可以理解为独立、并行的计算单元。
 
-1. 将输入序列通过多组不同的线性变换（即多个"头"）并行处理
-2. 每个头学习不同的注意力模式
-3. 最后将所有头的输出拼接并通过线性变换得到最终结果
+Transformer 采用了多头注意力机制（Multi-Head Attention，MHA）而不是传统的注意力机制以增强模型的表达能力。这种机制可以理解为：
+
+1. 并行计算：将输入序列通过多个独立、并行的注意力机制算子（或注意力头）同时进行计算处理；
+2. 模式学习：每个注意力头学习不同的注意力模式（例如：捕捉长距离依赖关系、关注局部语法特征或提取特定语义信息等）；
+3. 特征融合：最后将所有头的输出拼接，并通过线性变换得到最终结果。
+
+这种架构设计使得模型能够从不同的角度协同学习多样化的特征表示，从而更全面地建模序列内部的复杂关系。
+
+下面举几个例子来做一些辅助说明：
+
+1. **长距离依赖关系**，比如“The **cat** that wandered into our garden last winter **was** starving, but now is happily napping in the sun.”这段英文叙述，第 10 个词为“was”而不是“were”取决于第 2 个词“cat”。
+2. **局部语法特征**，比如“**a** book”与“**an** apple”，根据名词的发音特征，前者使用“a”，后者使用“an”。
+3. **特定语义**，比如“这个**苹果**很好吃”与“新发布的**苹果**手机”，两者中的“苹果”语义是不同的。
+
 
 具体计算过程如下：
 
