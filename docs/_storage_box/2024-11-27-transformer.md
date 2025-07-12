@@ -209,6 +209,39 @@ Transformer 采用了多头注意力机制（Multi-Head Attention，MHA）而不
 
 ##### **3.1.2 计算方法**
 
+前文有提及，Transformer 使用注意力机制将输入序列构建为内在表示以及基于内在表示自回归生成结果，而非传统的 RNN 与 CNN。
+因为用于注意力机制（详见 3.2 小节）计算的 query、key、value 完全由输入 token 序列通过线性变换（乘以一个矩阵，这个矩阵是需要学习的参数）而来，所以这种设计模式被称为**自**注意力机制。
+
+下面简单介绍一下计算过程，假设 $\mathbf{t}_i$ 表示第 $i$ 个 token，$j$ 表示第 $j$ 个注意力头，$\mathbf{t}_i$ 在第 $j$ 个注意力头中对应的 query、key 与 value 表示为 $\mathbf{q}\_{i, j}$、$\mathbf{k}\_{i, j}$ 与 $\mathbf{v}\_{i, j}$。
+
+首先，对每个输入token进行多组线性投影：
+
+$$
+\mathbf{q}_{i, j} = W^Q_j \mathbf{t}_i
+$$
+
+$$
+\mathbf{k}_{i, j} = W^K_j \mathbf{t}_i
+$$
+
+$$
+\mathbf{v}_{i, j} = W^V_j \mathbf{t}_i
+$$
+
+然后，在每个头上计算缩放点积注意力：
+
+$$
+\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}})\mathbf{v}_{k, j}
+$$
+
+最后，将所有头的输出拼接并通过线性变换：
+
+$$
+\mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
+$$
+
+从图 1 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 部分，第 2、3 个地方在 Decoder 部分。
+Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为施加了顺序掩码的注意力机制（也称为单向注意力机制或因果注意力机制）。
 假设 $\mathbf{t}_i$ 表示第 $i$ 个 token，$j$ 表示第 $j$ 个注意力头。
 
 首先，对每个输入token进行多组线性投影：
