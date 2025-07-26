@@ -179,7 +179,7 @@ Transformer 是一个完全基于注意力机制的 Seq2Seq 模型，其核心�
 图 1 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
 
 <div align="center">
-<img src="/assets/imgs/transformer/arch.png" width="60%"/>
+<img src="/assets/imgs/transformer/arch.png" width="70%"/>
 </div>
 <div align="center">
 <span style="font-size: 14px">图 1：Transformer 模型架构</span>
@@ -203,48 +203,18 @@ Transformer 采用了多头注意力机制（Multi-Head Attention，MHA）而不
 
 1. **长距离依赖关系**，比如“The **cat** that wandered into our garden last winter **was** starving, but now is happily napping in the sun.”这段英文叙述，第 10 个词为“was”而不是“were”取决于第 2 个词“cat”。
 2. **局部语法特征**，比如“**a** book”与“**an** apple”，根据名词的发音特征，前者使用“a”，后者使用“an”。
-3. **特定语义**，比如“这个**苹果**很好吃”与“新发布的**苹果**手机”，两者中的“苹果”语义是不同的。
+3. **特定语义**，比如“我的车旁边停了一辆剁椒鱼头”与“这家店的剁椒鱼头还不错”，两者中的“剁椒鱼头”语义是不同的。
 
 这种架构设计使得模型能够从不同的角度协同学习多样化的特征表示，从而更全面地建模序列内部的复杂关系。
 
 ##### **3.1.2 计算方法**
 
-前文有提及，Transformer 使用注意力机制将输入序列构建为内在表示以及基于内在表示自回归生成结果，而非传统的 RNN 与 CNN。
+前文有提及，对于将输入序列构建为内在表示（理解）与基于内在表示自回归生成结果（表达）两个过程，Transformer 皆使用注意力机制完成，而非传统的 RNN 与 CNN。
 因为用于注意力机制（详见 3.2 小节）计算的 query、key、value 完全由输入 token 序列通过线性变换（乘以一个矩阵，这个矩阵是需要学习的参数）而来，所以这种设计模式被称为**自**注意力机制。
 
-下面简单介绍一下计算过程，假设 $\mathbf{t}_i$ 表示第 $i$ 个 token，$j$ 表示第 $j$ 个注意力头，$\mathbf{t}_i$ 在第 $j$ 个注意力头中对应的 query、key 与 value 表示为 $\mathbf{q}\_{i, j}$、$\mathbf{k}\_{i, j}$ 与 $\mathbf{v}\_{i, j}$。
+下面简单介绍一下计算过程，假设 $\mathbf{t}_i$ 表示第 $i$ 个 token（Embedding 表示），$j$ 表示第 $j$ 个注意力头，$\mathbf{t}_i$ 在第 $j$ 个注意力头中的 query、key 与 value 分别表示为 $\mathbf{q}\_{i, j}$、$\mathbf{k}\_{i, j}$ 与 $\mathbf{v}\_{i, j}$。
 
-首先，对每个输入token进行多组线性投影：
-
-$$
-\mathbf{q}_{i, j} = W^Q_j \mathbf{t}_i
-$$
-
-$$
-\mathbf{k}_{i, j} = W^K_j \mathbf{t}_i
-$$
-
-$$
-\mathbf{v}_{i, j} = W^V_j \mathbf{t}_i
-$$
-
-然后，在每个头上计算缩放点积注意力：
-
-$$
-\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}})\mathbf{v}_{k, j}
-$$
-
-最后，将所有头的输出拼接并通过线性变换：
-
-$$
-\mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
-$$
-
-从图 1 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 部分，第 2、3 个地方在 Decoder 部分。
-Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为施加了顺序掩码的注意力机制（也称为单向注意力机制或因果注意力机制）。
-假设 $\mathbf{t}_i$ 表示第 $i$ 个 token，$j$ 表示第 $j$ 个注意力头。
-
-首先，对每个输入token进行多组线性投影：
+首先，按头对输入的每个 token $\mathbf{t}_i$ 进行线性变换，得到对应的 query、key 与 value：
 
 $$
 \mathbf{q}_{i, j} = W^Q_j \mathbf{t}_i
@@ -258,17 +228,34 @@ $$
 \mathbf{v}_{i, j} = W^V_j \mathbf{t}_i
 $$
 
+其中，$t_i \in \mathbb{R}^{d_t}$，$W^Q_j \in \mathbb{R}^{d \times d_t}$，$W^K_j \in \mathbb{R}^{d \times d_t}$，$W^V_j \in \mathbb{R}^{d \times d_t}$。
+
 然后，在每个头上计算缩放点积注意力：
 
 $$
-\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}})\mathbf{v}_{k, j}
+\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j} = \sum^n_{k=1} \frac{\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}}{\sqrt{d}}}{\sum^n_{m=1}\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{m, j}}}{\sqrt{d}}} \cdot \mathbf{v}_{k, j}
 $$
+
+> 注：${\rm softmax}$ 是一种在机器学习中广泛使用的算子，对于向量 $\mathbf{x} = [x_1, x_2, \dots ,x_n]$，${\rm softmax}\_i(\mathbf{x}) = \frac{e^{x_i}}{\sum^n_{k=1}e^{x_k}}$，它可以将 $\mathbf{x}$ 中的每个元素转化为一个 $0$ 至 $1$ 间的值，且所有元素转化后的值和为 $1$。
+
+可以看出，对于第 $j$ 个头，其输出 $\mathbf{o}_{i, j}$ 为 $[\mathbf{v}\_{1,j}, \mathbf{v}\_{2,j},\dots,\mathbf{v}\_{n,j}]$ 的线性组合，可以简写为 $\mathbf{o}\_{i, j} = \sum^n\_{k=1} \alpha\_k \mathbf{v}\_{k,j}$，在机器学习中通常用向量的内积来衡量两个向量的相似度，$\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 的内积越大，或 $\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 越相似，$\mathbf{v}\_{k,j}$ 的权重 $\alpha_k$ 就会越大，$\mathbf{v}\_{k,j}$ 所占的比重就会越大。**简单来讲就是，与当前的词越相近的词，对结果的影响越大。**
 
 最后，将所有头的输出拼接并通过线性变换：
 
 $$
 \mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
 $$
+
+从图 1 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
+Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），
+Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 底部的多头注意力机制为交叉注意力机制。
+
+这三种多头注意力机制的计算框架和上述是类似的，但有一些细微的差别。
+
+###### **3.1.2.1 双向注意力机制**
+
+Encoder 侧重于**理解**
+
 
 这种设计使得模型能够：
 
