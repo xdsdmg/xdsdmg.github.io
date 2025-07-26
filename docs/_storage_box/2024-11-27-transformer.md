@@ -254,8 +254,46 @@ Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为�
 
 ###### **3.1.2.1 双向注意力机制**
 
-Encoder 侧重于**理解**
+Encoder-Decoder 架构的核心思想是“先理解后生成”。其中 Encoder 的核心任务是实现对输入的深度理解，这一过程通过全序列扫描（full-sequence reading）实现。具体表现为：当处理长度为 $l$ 的输入序列 $X = [\mathbf{t}_1, \mathbf{t}_2, \dots, \mathbf{t}_l]$ 时，每个位置的注意力计算会同时考虑序列中所有 token 的 key-value 对。因此公式(7)中的求和上限应修正为序列长度 $l$：
 
+$$
+\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j}
+$$
+
+这种全局可见的注意力模式使 Encoder 能够建立完整的上下文表征。
+
+###### **3.1.2.2 单向注意力机制**
+
+Decoder 负责基于 Encoder 生成的中间表示自回归生成结果，对于自回归过程，当前的输出只取决于之前的结果，与未来的结果无关。
+
+Decoder 采用自回归方式生成输出，其核心约束是：当前时刻的预测只能依赖于已生成的输出（即历史信息）。这种时序依赖性通过注意力掩码（attention mask）实现，具体表现为：
+
+1. **训练阶段**：  
+   - 采用**因果掩码（causal mask）**，确保第 $i$ 个位置的 query 只能访问前 $i$ 个位置的 key-value 对。  
+   - 这种掩码通常通过一个下三角矩阵（元素为 $-\infty$ 或 $0$）实现，使得 softmax 计算时未来位置的概率接近 $0$。  
+   - 公式中的求和上限为当前位置 $i$，但实际实现时通常仍计算所有位置的注意力分数，再通过掩码屏蔽未来信息：  
+
+   $$
+   \mathbf{o}_{i, j} = \sum^{l}_{k=1} \text{mask}(k \leq i) \cdot {\rm softmax}_k\left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}\right) \cdot \mathbf{v}_{k, j}
+   $$
+
+2. **推理阶段**：  
+   - 由于解码是逐步进行的（每次生成一个 token），模型只需计算当前 query 与历史 key-value 对的注意力，无需显式掩码。  
+   - 为提升效率，通常会缓存（cache）历史 key-value 对，避免重复计算。 
+
+$$
+\mathbf{o}_{i, j} = \sum^{\color{red} i}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j}
+$$
+
+###### **3.1.2.3 交叉注意力机制**
+
+在解码阶段，Decoder 需要将 Encoder 输出的上下文表征（通常记为 $\mathbf{U} = [\mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_l]$）融入生成过程。交叉注意力机制的查询（query）来自 Decoder 的当前状态，而 key-value 对则来自 Encoder 的最终输出：
+
+$$
+\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T {\mathbf{\color{red} u}_{\color{red} k}}}{\sqrt{d}}) \cdot \mathbf{\color{red} u}_{\color{red} k}
+$$
+
+该机制实现了 Encoder-Decoder 之间的信息桥接，是序列到序列建模的关键组件。
 
 这种设计使得模型能够：
 
@@ -265,24 +303,51 @@ Encoder 侧重于**理解**
 
 #### **3.2 位置编码**
 
-由于自注意力机制本身是位置无关的（permutation invariant），为了保留序列的顺序信息，Transformer 引入了位置编码。具体实现是将位置信息通过正弦/余弦函数编码后直接加到输入嵌入中：
+自注意力机制本身具有置换不变性（permutation invariant），这意味着其对输入序列的顺序不敏感。为了保留关键的序列位置信息，Transformer 引入了位置编码机制。该机制通过将位置信息与词嵌入向量相加来实现：
 
 $$
-t_i = t_i + {\rm PE}(i)
+\mathbf{t}_i = \mathbf{t}_i + \mathrm{PE}(i)
 $$
 
-其中位置编码函数的设计满足：
-- 能唯一标识每个位置
-- 能处理比训练时更长的序列
-- 有稳定的梯度传播特性
+其中位置编码函数 $\mathrm{PE}(i)$ 的设计遵循以下原则：
+1. **唯一性**：每个位置具有独一无二的编码表示
+2. **可扩展性**：能够处理超出训练时所见长度的序列
+3. **稳定性**：具有良好的梯度传播特性，便于模型优化
+
+位置编码采用正弦和余弦函数的组合形式，这种设计具有以下优势：
+- 可以表示绝对位置信息
+- 允许模型学习相对位置关系
+- 能够自然地扩展到更长的序列长度
+
+值得注意的是，由于自注意力机制的本质特性，相同的 Key-Value 对在不同位置与 Query 的计算结果理论上应该相同。然而，通过引入位置编码，Query 和 Key 的点积运算中自然地包含了位置角度信息，这使得模型能够区分不同位置的相同内容。
 
 #### **Add & Norm**
 
-Transformer 在每个子层（自注意力层和前馈网络层）后都采用了：
-1. 残差连接（Add）：将子层输入与输出相加，缓解深层网络梯度消失问题
-2. 层归一化（Norm）：对特征维度进行归一化，稳定训练过程
+Transformer 架构在每个子层（包括自注意力层和前馈网络层）后都采用了以下关键设计：
 
-这种设计使得深层Transformer模型能够稳定训练，是模型成功的关键因素之一。
+1. **残差连接（Residual Connection）**
+   - 数学形式：$\mathbf{x} + \mathrm{Sublayer}(\mathbf{x})$
+   - 功能作用：
+     * 建立直接的梯度传播路径
+     * 有效缓解深层网络的梯度消失问题
+     * 使模型能够学习残差映射而非完整变换
+
+2. **层归一化（Layer Normalization）**
+   - 操作方式：沿特征维度进行归一化
+   - 核心优势：
+     * 稳定各层的输入分布
+     * 加速模型收敛
+     * 减少对初始化的敏感性
+
+**领域差异说明**：
+- 计算机视觉（CV）中常采用批归一化（BatchNorm）：沿批次维度归一化
+- 自然语言处理（NLP）中偏好层归一化（LayerNorm）：沿特征维度归一化
+（这种差异主要源于文本数据的变长特性与批处理挑战）
+
+这种 Add & Norm 的组合设计：
+- 使深层Transformer（如12层以上的模型）能够稳定训练
+- 成为Transformer架构成功的关键因素之一
+- 后续被多种神经网络架构广泛借鉴
 
 对于$x\in\mathbb{R}^d$
 
