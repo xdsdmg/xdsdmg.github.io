@@ -7,40 +7,49 @@ categories: draft
 
 ### **1. 引言**
 
-~~自己在去年 11 月份学习了 [Transformer 模型](https://arxiv.org/abs/1706.03762)，并根据一些不错的 blog 实现了下此模型，后来几个月慢慢更深入地学习了深度学习相关知识，了解了更多，也慢慢发现 Transformer 中有些细节自己并不明白，比如：为什么 Tranformer 模型要分为 encoder 和 decoder 两个模块？为什么如今几乎所有的 LLM 模型都使用 decoder-Only 架构？最近两天又重新研究了下 Transformer 模型，写这篇 blog 记录一下。~~
+[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 均可视为Transformer 架构的变体或扩展。值得注意的是，这种影响力已超越算法层面，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计哲学，都深度耦合了Transformer 的结构特性。因此，想要深入理解当下的 AI 领域，Transformer 是非常值得研究的。
 
-[Transformer](https://arxiv.org/abs/1706.03762) 对当下 AI 领域的影响极其深远。目前，几乎所有大型语言模型 (LLM) 的架构都是在 Transformer 基础之上演进发展而来。不仅如此，支撑 LLM 运行的推理引擎，乃至底层硬件设计，都会专门考虑如何高效实现 Transformer 架构。因此，想要深入理解当下的 AI 领域，Tranformer 是非常值得研究的。
+> 这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程。
 
 本次分享将按以下脉络展开：
-1. 前置基础：文本是如何转化为可计算的数学向量的？
-2. Transformer 诞生的历史背景，它旨在解决哪些核心问题？
-3. Transformer 技术原理的通俗解释。
-4. Transformer 在后续 LLM 中的演进，架构发生了哪些关键变化？
-5. 关于 Transformer 架构的延伸讨论。
+1. **前置基础**：文本是如何转化为可计算的数学向量的？
+2. **历史背景**：Transformer 诞生的历史背景，它旨在解决哪些核心问题？
+3. **技术原理**：Transformer 技术原理的通俗解释。
+4. **后续演进**：Transformer 在后续 LLM 中的演进，架构发生了哪些关键变化？
 
 ### **2. 如何将文本转化为可计算的数学向量**
 
-> 计算机是如何对文字进行计算的呢？文字是无法直接参与数学计算的，计算机究竟对文字进行了哪些处理？
+> **关键问题**：<br>LLM 本质上是基于概率的数学建模系统，但自然语言符号本身不具备可计算性，所以计算机是如何对文字进行计算的呢？计算机究竟对文字进行了哪些处理？
 
-Transformer 是一种主要应用于自然语言处理（NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学向量，这一步骤是所有 NLP 模型的基础和关键。
+Transformer 是一种主要应用于自然语言处理（Natural Language Processing，NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学向量，这一步骤是所有 NLP 模型的基础和关键。
 
 > 注：<br> **Seq2Seq 模型**：在 NLP 中，Seq2Seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
 
-计算机通过分词（Tokenization）与词嵌入（Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学向量。
+计算机通过分词（Tokenization）与词嵌入（Word Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学向量。
 
-#### **2.1 Tokenization**
+#### **2.1 分词（Tokenization）**
 
-Tokenization 的核心任务是将连续的自然语言文本按照语义或语法规则切分成独立的词语单元（token）。例如，对于输入文本"今天天气怎么样？"，Tokenizer 可能将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。  
+**Tokenization 的核心任务是将连续的自然语言文本按照语义或语法规则切分成独立的词语单元（token）。**执行分词这个动作的模块被称为**分词器（Tokenizer）**，例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
 
-目前 LLM（如 DeepSeek V3）普遍采用 [Byte-level BPE（BBPE）分词算法](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。  
+那 tokenizer 是如何构建和工作的呢？
+1. **构建（训练阶段）**：通过大量的训练文本构建词表；
+2. **工作（推理阶段）**：tokenizer 基于词表对输入文本进行分词。
 
-在实际应用中，文本归一化（Normalization）是分词前的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
+目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level [Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
 
-推荐材料：
-1. 想进一步了解各种 Tokenization 算法可阅读这篇[文章](https://zhuanlan.zhihu.com/p/652520262)；
+> Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
+
+在实际应用中，文本归一化（Text Normalization）是构建词表时的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
+
+1. **形式统一化**：消除书写变体（如全角/半角字符）、拼写差异（如美式/英式英语）和字符编码差异（如 Unicode 组合字符），比如“colour”（英式）与“color”（美式）、Unicode 编码的 NFKC 标准化处理；
+2. **语义一致性**：确保相同语义的文本单元获得相同的向量表示，比如“café”与“cafe”、“I'm”与“I am”；
+3. **词表效率**：通过减少表面形式的多样性，提升词表的空间利用率。
+
+>推荐材料：
+1. 想进一步了解各种词表构建算法可阅读这篇[文章](https://zhuanlan.zhihu.com/p/652520262)；
 2. 如果对于 Tokenizer 的实现感兴趣，可以看看 Hugging Face 提供的 Tokenizer 的 Rust 实现（[代码仓库](https://github.com/huggingface/tokenizers)）。
 
-#### **2.2 Embedding**
+#### **2.2 词嵌入（Word Embedding）**
 
 Embedding 的核心任务是将每个 token 映射为一个稠密向量（Dense Vector）。例如，词语“今天”可能被转化为向量$[1.1, 1.2, 2.0]$。
 
