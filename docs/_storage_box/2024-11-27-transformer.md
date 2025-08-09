@@ -45,13 +45,15 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 2. **语义一致性**：确保相同语义的文本单元获得相同的向量表示，比如“café”与“cafe”、“I'm”与“I am”；
 3. **词表效率**：通过减少表面形式的多样性，提升词表的空间利用率。
 
+> 如果平常大家有使用 Hugging Face 下载 LLM 文件，会发现每个模型仓库里基本都会有一个`tokenizer.json`文件，这个文件存储了 tokenizer 完整的配置信息，当然也包括词表数据。 
+
 >推荐材料：
 1. 想进一步了解各种词表构建算法可阅读这篇[文章](https://zhuanlan.zhihu.com/p/652520262)；
 2. 如果对于 Tokenizer 的实现感兴趣，可以看看 Hugging Face 提供的 Tokenizer 的 Rust 实现（[代码仓库](https://github.com/huggingface/tokenizers)）。
 
 #### **2.2 词嵌入（Word Embedding）**
 
-Embedding 的核心任务是将每个 token 映射为一个稠密向量（Dense Vector）。例如，词语“今天”可能被转化为向量$[1.1, 1.2, 2.0]$。
+**词嵌入（Word Embedding）的核心任务是将 tokenizer 输出的每个 token 映射为一个稠密向量（Dense Vector）。**例如，token“今天”可能被转化为向量 $[1.1, 1.2, 2.0]$。
 
 为什么叫“词嵌入”（Embedding）而不是“向量化”？
 这一术语的起源可以追溯到 2013 年 Google AI 提出的 Word2vec 模型。“词嵌入”不仅实现了简单的向量化，还蕴含了更深层的设计理念：
