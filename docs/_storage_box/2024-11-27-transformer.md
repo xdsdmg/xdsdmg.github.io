@@ -1,15 +1,18 @@
 ---
 layout: post
-title: "Transformer"
+title: "聊一聊 Transformer"
 date: 2024-11-27 20:13:09 +0800
 categories: draft 
 ---
 
 ### **1. 引言**
 
-[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 均可视为Transformer 架构的变体或扩展。值得注意的是，这种影响力已超越算法层面，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计哲学，都深度耦合了Transformer 的结构特性。因此，想要深入理解当下的 AI 领域，Transformer 是非常值得研究的。
+[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎（软件层面）的核心优化目标，以及专用 AI 加速硬件（硬件层面）的设计理念，都会考量 Transformer 的结构特性。因此，想要深入理解当下的 AI 领域，Transformer 是非常值得研究的。
 
-> 这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程。
+> 注：<br>算法与硬件相互考量的 co-design 设计可能是未来的趋势。<br>推荐阅读：[Insights into DeepSeek-V3: Scaling Challenges and Reflections on
+Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
+
+这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程，**最大的目标是能让大家感受到一些 AI 之美**。
 
 本次分享将按以下脉络展开：
 1. **前置基础**：文本是如何转化为可计算的数学向量的？
