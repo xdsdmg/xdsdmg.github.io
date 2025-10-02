@@ -32,27 +32,35 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 #### **2.1 分词（Tokenization）**
 
-**Tokenization 的核心任务是将连续的自然语言文本按照语义或语法规则切分成独立的词语单元（token）。**执行分词这个动作的模块被称为**分词器（Tokenizer）**，例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
+**Tokenization 的核心任务是将连续的自然语言文本按照语义或语法规则切分成独立的词语单元（token）。**执行分词这个动作的模块被称为**分词器（Tokenizer）**。例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
 
-那 tokenizer 是如何构建和工作的呢？
-1. **构建（训练阶段）**：通过大量的训练文本构建词表；
-2. **工作（推理阶段）**：tokenizer 基于词表对输入文本进行分词。
+tokenization 技术涉及**分词器的构建**和**对输入文本进行分词**两方面：
+1. **分词器的构建**：通过某种分词算法使用大量的训练文本（语料）构建词表；
+2. **对输入文本进行分词**：通过某种分词算法基于训练好的词表对输入文本进行分词。
 
-目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level [Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
+主要的分词算法有 BPE、WordPiece 和 Unigram 三种，目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level [Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
 
 > Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
 
-在实际应用中，文本归一化（Text Normalization）是构建词表时的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
+##### **2.1.2 分词阶段**
+
+
+
+在实际应用中，文本归一化（Text Normalization）是构建词表前的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
 
 1. **形式统一化**：消除书写变体（如全角/半角字符）、拼写差异（如美式/英式英语）和字符编码差异（如 Unicode 组合字符），比如“colour”（英式）与“color”（美式）、Unicode 编码的 NFKC 标准化处理；
 2. **语义一致性**：确保相同语义的文本单元获得相同的向量表示，比如“café”与“cafe”、“I'm”与“I am”；
 3. **词表效率**：通过减少表面形式的多样性，提升词表的空间利用率。
 
-> 如果平常大家有使用 Hugging Face 下载 LLM 文件，会发现每个模型仓库里基本都会有一个`tokenizer.json`文件，这个文件存储了 tokenizer 完整的配置信息，当然也包括词表数据。 
+如果平常大家有使用 Hugging Face 下载 LLM 文件，会发现每个模型仓库里基本都会有一个`tokenizer.json`文件，这个文件存储了 tokenizer 完整的配置信息，当然也包括词表数据。 
 
->推荐材料：
+推荐材料：
 1. 如果想进一步了解各种词表构建算法，可阅读这篇[文章](https://zhuanlan.zhihu.com/p/652520262)；
 2. 如果对于 Tokenizer 的实现感兴趣，可以看看 Hugging Face 提供的 Tokenizer 的 Rust 实现（[代码仓库](https://github.com/huggingface/tokenizers)）。
+
+一些问题：
+1. 词表是越大越好，还是越小越好？
+2. 目前 LLM 的词表尺寸是不小的，比如 DeepSeek V3 为 12.8k，对于这种大尺寸的词表，应该如何实现高效的分词？
 
 #### **2.2 词嵌入（Word Embedding）**
 
