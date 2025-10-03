@@ -28,11 +28,24 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 > 注：<br> **Seq2Seq 模型**：在 NLP 中，Seq2Seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
 
-计算机通过分词（Tokenization）与词嵌入（Word Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学向量。
+计算机通过分词（Tokenization）与词嵌入（Word Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学表示。
+
+- **分词**：将一段文本分割为一系列词语单元。
+- **词嵌入**：将通过分词得到的一系列词语单元逐个转化为数值向量。
 
 #### **2.1 分词（Tokenization）**
 
-**Tokenization 的核心任务是将连续的自然语言文本按照语义或语法规则切分成独立的词语单元（token）。**执行分词这个动作的模块被称为**分词器（Tokenizer）**。例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
+- 什么样的分词算法是好的？
+- 分词算法的发展脉络，常见的分词算法有哪些
+- LLM 的分词算法
+
+**Tokenization 的核心任务是将连续的自然语言文本切分成一系列词语单元（token）。**执行分词这个动作的工具被称为**分词器（Tokenizer）**。例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
+
+##### **2.1.1 什么样的分词算法是好的？**
+
+最直观的想法是，我们希望分词的结果能很好地保留语义特征，比如“苹果”这个词，希望其在分词结果中被保留为一个完整的词语单元，而不是被切分成“苹“和”果”两个词语单元，切分的粒度太粗或太细都是不好的。
+
+##### ****
 
 tokenization 技术涉及**分词器的构建**和**对输入文本进行分词**两方面：
 1. **分词器的构建**：通过某种分词算法使用大量的训练文本（语料）构建词表；
@@ -43,8 +56,6 @@ tokenization 技术涉及**分词器的构建**和**对输入文本进行分词*
 > Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
 
 ##### **2.1.2 分词阶段**
-
-
 
 在实际应用中，文本归一化（Text Normalization）是构建词表前的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
 
