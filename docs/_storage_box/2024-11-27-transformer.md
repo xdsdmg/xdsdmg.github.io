@@ -45,7 +45,41 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 最直观的想法是，我们希望分词的结果能很好地保留语义特征，比如“苹果”这个词，希望其在分词结果中被保留为一个完整的词语单元，而不是被切分成“苹“和”果”两个词语单元，切分的粒度太粗或太细都是不好的。
 
-##### ****
+##### **2.1.2 各式各样的分词算法**
+
+> 推荐阅读：[Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)
+
+###### **2.1.2.1 基于规则的分词**
+
+早期的分词算法通常是基于某种规则对文本进行分割，比如空格，标点等。
+
+```
+Don't you love Transformers? We sure do.
+```
+
+最简单的分词是基于空格对语料进行切分，比如上面这段叙述，将被切分为
+
+```
+"Don't", "you", "love", "Transformers?", "We", "sure", "do."
+```
+
+"Don't"，"Transformers?" 与 "do."的切分结果还不够好，可以再进一步基于标点进行切分，这一次得到
+
+```
+"Don", "'", "t", "you", "love", "Transformers", "?", "We", "sure", "do", "."
+```
+
+但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意思，比如 apples 分解为 `"apple", "s"`，doing 分解为 `"do", "ing"`。
+
+```
+"Do", "n't", "you", "love", "Transformers", "?", "We", "sure", "do", "."
+```
+
+###### **2.1.2.2 基于统计的分词**
+
+###### **2.1.2.2.1 WordPiece**
+###### **2.1.2.2.2 Byte-Pair Encoding(BPE)**
+###### **2.1.2.2.3 Unigram**
 
 tokenization 技术涉及**分词器的构建**和**对输入文本进行分词**两方面：
 1. **分词器的构建**：通过某种分词算法使用大量的训练文本（语料）构建词表；
