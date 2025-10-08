@@ -5,9 +5,9 @@ date: 2024-11-27 20:13:09 +0800
 categories: draft 
 ---
 
-### **1. 引言**
+# **1. 引言**
 
-[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎（软件层面）的核心优化目标，以及专用 AI 加速硬件（硬件层面）的设计理念，都会考量 Transformer 的结构特性。因此，想要深入理解当下的 AI 领域，Transformer 是非常值得研究的。
+[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎（软件层面）的核心优化目标，以及专用 AI 加速硬件（硬件层面）的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
 
 > 注：<br>算法与硬件相互考量的 co-design 设计可能是未来的趋势。<br>推荐阅读：[Insights into DeepSeek-V3: Scaling Challenges and Reflections on
 Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
@@ -20,11 +20,11 @@ Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
 3. **技术原理**：Transformer 技术原理的通俗解释。
 4. **后续演进**：Transformer 在后续 LLM 中的演进，架构发生了哪些关键变化？
 
-### **2. 如何将文本转化为可计算的数学向量**
+# **2. 如何将文本转化为可计算的数学向量**
 
 > **关键问题**：<br>LLM 本质上是基于概率的数学建模系统，但自然语言符号本身不具备可计算性，所以计算机是如何对文字进行计算的呢？计算机究竟对文字进行了哪些处理？
 
-Transformer 是一种主要应用于自然语言处理（Natural Language Processing，NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学向量，这一步骤是所有 NLP 模型的基础和关键。
+Transformer 是一种主要应用于自然语言处理（Natural Language Processing，NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学表示，这一步骤是所有 NLP 模型的基础和关键。
 
 > 注：<br> **Seq2Seq 模型**：在 NLP 中，Seq2Seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
 
@@ -33,7 +33,7 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 - **分词**：将一段文本分割为一系列词语单元。
 - **词嵌入**：将通过分词得到的一系列词语单元逐个转化为数值向量。
 
-#### **2.1 分词（Tokenization）**
+## **2.1 分词（Tokenization）**
 
 - 什么样的分词算法是好的？
 - 分词算法的发展脉络，常见的分词算法有哪些
@@ -41,17 +41,17 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 **Tokenization 的核心任务是将连续的自然语言文本切分成一系列词语单元（token）。**执行分词这个动作的工具被称为**分词器（Tokenizer）**。例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
 
-##### **2.1.1 什么样的分词算法是好的？**
+### **2.1.1 什么样的分词算法是好的？**
 
 最直观的想法是，我们希望分词的结果能很好地保留语义特征，比如“苹果”这个词，希望其在分词结果中被保留为一个完整的词语单元，而不是被切分成“苹“和”果”两个词语单元，切分的粒度太粗或太细都是不好的。
 
-##### **2.1.2 各式各样的分词算法**
+### **2.1.2 各式各样的分词算法**
 
 > 推荐阅读：[Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)
 
-###### **2.1.2.1 基于规则的分词**
+#### **2.1.2.1 基于规则的分词**
 
-早期的分词算法通常是基于某种规则对文本进行分割，比如空格，标点等。
+早期的分词算法通常是基于某种规则对输入文本进行分割，比如空格，标点等。下面的例子来自 [Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)。
 
 ```
 Don't you love Transformers? We sure do.
@@ -69,17 +69,24 @@ Don't you love Transformers? We sure do.
 "Don", "'", "t", "you", "love", "Transformers", "?", "We", "sure", "do", "."
 ```
 
-但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意思，比如 apples 分解为 `"apple", "s"`，doing 分解为 `"do", "ing"`。
+但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意味，比如 apples 分解为 `"apple", "s"`，doing 分解为 `"do", "ing"`。
 
 ```
-"Do", "n't", "you", "love", "Transformers", "?", "We", "sure", "do", "."
+"Do", "n't", "you", "love", "Transformer", "?", "We", "sure", "do", "."
 ```
 
-###### **2.1.2.2 基于统计的分词**
+根据分词的粒度，可以将基于规则的分词算法分为三种：
+1. **基于字母的分词**，这种分词算法的结果数量最少（分割粒度过细），但会增大下游任务的复杂度，有一个比较形象的例子，其实我们可以用红绿蓝表示任何一种颜色（RGB 值），类似于直接使用字母进行分词，但在日常生活中，比如挑选口红，我们不会使用 RGB 值，这样会很不方便，而是一些约定俗成的色号；
+2. **基于单词的分词**，这种分词算法的结果数量过大（分割粒度过粗），会降低模型的泛化性；
+3. **基于子词的分词**，这是一种比较折中的方案。
+
+
+
+#### **2.1.2.2 基于统计的分词**
 
 随着 NLP 任务中语料规模的增大，越来越倾向于使用基于统计的方式来进行分词，先对大量训练语料使用某种统计方法构建词表，再基于词表对输入文本进行分词。
 
-###### **2.1.2.2.1 WordPiece**
+##### **2.1.2.2.1 WordPiece**
 
 对于训练语料，先基于最基本的词语组成单元构成一个初始词表，比如对于英文语料，可能是英文字母和常见的标点符号；对于中文，可能是基础汉字和常见的标点符号；对于现代大语言模型，可能就是 256 种可能的字节。
 
@@ -87,31 +94,33 @@ Don't you love Transformers? We sure do.
 
 $$
 \begin{equation}
-\arg \max_{x, y} \frac{ {\rm count} (w_x) \times {\rm count} (w_y)}{ {\rm count} (w_x w_y)}
+\arg \max_{x, y \in D} \frac{  {\rm count} (x y)}{ {\rm count} (x) \times {\rm count} (y)}
 \end{equation}
 $$
 
-其中，${\rm count}(\cdot)$ 表示词语单元在语料中的出现次数。这个公式的思路就是从当前词表中选取两个词语单元 $w_x$ 与 $w_y$ 组合成新的词语单元 $w_x w_y$，这两个词语单元 $w_x$ 与 $w_y$ 要满足，两者各自出现次数的乘积 ${\rm count} (w_x) \times {\rm count} (w_y)$ 除以将两者相连作为新的词语单元的出现次数 ${\rm count} (w_x w_y)$ 的结果最大。
+其中，${\rm count}(\cdot)$ 表示词语单元在语料中的出现次数，$D$ 表示当前的词表，$x$ 与 $y$ 表示当前词表中任意两个词语单元。这个公式的思路就是从当前词表中选取两个词语单元 $x$ 与 $y$ 组合成新的词语单元 $x y$，这两个词语单元 $x$ 与 $y$ 要满足，将两者相连作为新的词语单元在训练语料中的出现次数 ${\rm count} (x y)$ 除以两者各自在训练语料中的出现次数的乘积 ${\rm count} (x) \times {\rm count} (y)$ 的结果最大。
 
-这个思路基于这样一种概率理论， $\frac{P(X)P(Y)}{P(X, Y)}$ 的值越大，事件 $X$ 与事件 $Y$ 的相关性越强。
+这个思路基于这样一种概率理论，对于事件 $X$ 与事件 $Y$，$\frac{P(X, Y)}{P(X)P(Y)}$ 的值越大，事件 $X$ 与事件 $Y$ 的相关性越强。
 
-###### **2.1.2.2.2 Byte-Pair Encoding(BPE)**
+##### **2.1.2.2.2 Byte-Pair Encoding(BPE)**
 
-BPE 算法和 WordPiece 非常相似，只是 BPE 是直接选取 ${\rm count} (w_x w_y)$ 最大的 $w_x w_y$ 作为新的词语单元。
+[Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BPE）算法和 WordPiece 非常相似，只是 BPE 是直接选取 ${\rm count} (x y)$ 最大的 $x y$ 作为新的词语单元。
 
 $$
 \begin{equation}
-\arg \max_{x, y} {\rm count} (w_x w_y)
+\arg \max_{x, y \in D} {\rm count} (x y)
 \end{equation}
 $$
 
-###### **2.1.2.2.3 Unigram**
+##### **2.1.2.2.3 Unigram**
 
-Unigram 较复杂一些，WordPiece 与 BPE 的词表构建是由小到大，而 Unigram 是由大到小，Unigram 会先使用某种启发算法，比如 BPE 或 WordPiece 先生成一个很大的词表，然后进行迭代，每一步迭代会从词表中剔除一个词语单元直至词表达到预定大小，该词语单元满足，对于训练语料是由当前词表构成的似然，它的影响最小的。
+[Unigram](https://arxiv.org/pdf/1804.10959) 算法较复杂一些，WordPiece 算法与 BPE 算法的词表构建是由小到大，而 Unigram 算法是由大到小，Unigram 算法会预先使用某种启发算法，比如 BPE 或 WordPiece，生成一个很大的词表，然后进行迭代，每一步迭代会从词表中剔除一个词语单元直至词表达到预定大小，该词语单元需要满足，对于训练语料是由当前词表构成的似然，它的影响最小的，似然可以写为如下形式：
 
 $$
-L=\sum_{i=1}^{N} \prod_{x \in S_i} P(w_x)
+L=\sum_{i=1}^{N} \prod_{x \in D_i} P(x)
 $$
+
+其中，假设对于训练语料使用当前词表有 $N$ 种切分方式，每种切分方式所用到的词语单元集合记为 $D_i$。
 
 tokenization 技术涉及**分词器的构建**和**对输入文本进行分词**两方面：
 1. **分词器的构建**：通过某种分词算法使用大量的训练文本（语料）构建词表；
@@ -121,9 +130,9 @@ tokenization 技术涉及**分词器的构建**和**对输入文本进行分词*
 
 > Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
 
-###### **2.1.2.2.4 总结**
+##### **2.1.2.2.4 总结**
 
-对于这三种分词算法，Unigram 最为复杂，它属于 Xgram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 与 BPE 的输出结果是唯一的（或者刚性的），Unigram 还有一个好处是可以比较方便的对词表进行剪裁。
+对于这三种分词算法，Unigram 算法最为复杂，它属于 X-gram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 算法的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 算法与 BPE 算法的输出结果是唯一的（或者刚性的），Unigram 算法还有一个好处是可以比较方便的对词表进行剪裁。
 
 ##### **2.1.2 分词阶段**
 
