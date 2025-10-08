@@ -121,6 +121,10 @@ tokenization 技术涉及**分词器的构建**和**对输入文本进行分词*
 
 > Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
 
+###### **2.1.2.2.4 总结**
+
+对于这三种分词算法，Unigram 最为复杂，它属于 Xgram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 与 BPE 的输出结果是唯一的（或者刚性的），Unigram 还有一个好处是可以比较方便的对词表进行剪裁。
+
 ##### **2.1.2 分词阶段**
 
 在实际应用中，文本归一化（Text Normalization）是构建词表前的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
