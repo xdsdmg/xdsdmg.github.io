@@ -62,8 +62,12 @@ collections:
     output: true
     permalink: /:collection/:path/
 
-# scholar:
-#   style: modern-language-association
+scholar:
+  style: apa
+  locale: en
+  bibliography_list_tag: ol
+  bibliography_list_class: bibliography
+  bibliography_item_tag: li
 
 defaults:
   - scope:
