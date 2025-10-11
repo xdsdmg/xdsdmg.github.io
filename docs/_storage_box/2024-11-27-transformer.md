@@ -517,4 +517,4 @@ $$
 Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
 
 
-{% bibliography --cited --file transformer.bib %}
+{% bibliography --file transformer.bib %}
