@@ -7,18 +7,15 @@ categories: draft
 
 # **1. 引言**
 
-[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎（软件层面）的核心优化目标，以及专用 AI 加速硬件（硬件层面）的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
-
-> 注：<br>算法与硬件相互考量的 co-design 设计可能是未来的趋势。<br>推荐阅读：[Insights into DeepSeek-V3: Scaling Challenges and Reflections on
-Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
+[Transformer](https://arxiv.org/abs/1706.03762) 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (Large Language Model，LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
 
 这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程，**最大的目标是能让大家感受到一些 AI 之美**。
 
 本次分享将按以下脉络展开：
-1. **前置基础**：文本是如何转化为可计算的数学向量的？
-2. **历史背景**：Transformer 诞生的历史背景，它旨在解决哪些核心问题？
-3. **技术原理**：Transformer 技术原理的通俗解释。
-4. **后续演进**：Transformer 在后续 LLM 中的演进，架构发生了哪些关键变化？
+- **前置基础**：文本是如何转化为可计算的数学表示的？
+- **历史背景**：Transformer 诞生的历史背景，它旨在解决哪些核心问题？
+- **技术原理**：Transformer 技术原理的通俗解释。
+- **后续演进**：Transformer 架构在后续 LLM 中的应用，Transformer 架构在 LLM 中发生了哪些关键变化？
 
 # **2. 如何将文本转化为可计算的数学向量**
 
@@ -35,10 +32,6 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 ## **2.1 分词（Tokenization）**
 
-- 什么样的分词算法是好的？
-- 分词算法的发展脉络，常见的分词算法有哪些
-- LLM 的分词算法
-
 **Tokenization 的核心任务是将连续的自然语言文本切分成一系列词语单元（token）。**执行分词这个动作的工具被称为**分词器（Tokenizer）**。例如，对于输入文本“今天天气怎么样？”，Tokenizer 将其分解为 token 序列 ["今天", "天气", "怎么样", "？"]。
 
 ### **2.1.1 什么样的分词算法是好的？**
@@ -54,19 +47,19 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 早期的分词算法通常是基于某种规则对输入文本进行分割，比如空格，标点等。下面的例子来自 [Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)。
 
 ```
-Don't you love Transformers? We sure do.
+Don't you love Transformer? We sure do.
 ```
 
 最简单的分词是基于空格对语料进行切分，比如上面这段叙述，将被切分为
 
 ```
-"Don't", "you", "love", "Transformers?", "We", "sure", "do."
+"Don't", "you", "love", "Transformer?", "We", "sure", "do."
 ```
 
-"Don't"，"Transformers?" 与 "do."的切分结果还不够好，可以再进一步基于标点进行切分，这一次得到
+"Don't"，"Transformer?" 与 "do."的切分结果还不够好，可以再进一步基于标点进行切分，这一次得到
 
 ```
-"Don", "'", "t", "you", "love", "Transformers", "?", "We", "sure", "do", "."
+"Don", "'", "t", "you", "love", "Transformer", "?", "We", "sure", "do", "."
 ```
 
 但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意味，比如 apples 分解为 `"apple", "s"`，doing 分解为 `"do", "ing"`。
@@ -79,8 +72,6 @@ Don't you love Transformers? We sure do.
 1. **基于字母的分词**，这种分词算法的结果数量最少（分割粒度过细），但会增大下游任务的复杂度，有一个比较形象的例子，其实我们可以用红绿蓝表示任何一种颜色（RGB 值），类似于直接使用字母进行分词，但在日常生活中，比如挑选口红，我们不会使用 RGB 值，这样会很不方便，而是一些约定俗成的色号；
 2. **基于单词的分词**，这种分词算法的结果数量过大（分割粒度过粗），会降低模型的泛化性；
 3. **基于子词的分词**，这是一种比较折中的方案。
-
-
 
 #### **2.1.2.2 基于统计的分词**
 
@@ -100,7 +91,7 @@ $$
 
 其中，${\rm count}(\cdot)$ 表示词语单元在语料中的出现次数，$D$ 表示当前的词表，$x$ 与 $y$ 表示当前词表中任意两个词语单元。这个公式的思路就是从当前词表中选取两个词语单元 $x$ 与 $y$ 组合成新的词语单元 $x y$，这两个词语单元 $x$ 与 $y$ 要满足，将两者相连作为新的词语单元在训练语料中的出现次数 ${\rm count} (x y)$ 除以两者各自在训练语料中的出现次数的乘积 ${\rm count} (x) \times {\rm count} (y)$ 的结果最大。
 
-这个思路基于这样一种概率理论，对于事件 $X$ 与事件 $Y$，$\frac{P(X, Y)}{P(X)P(Y)}$ 的值越大，事件 $X$ 与事件 $Y$ 的相关性越强。
+这个思路基于这样一种概率理论，对于事件 $X$ 与事件 $Y$，$\frac{p(X, Y)}{p(X)p(Y)}$ 的值越大，事件 $X$ 与事件 $Y$ 的相关性越强。
 
 ##### **2.1.2.2.2 Byte-Pair Encoding(BPE)**
 
@@ -117,24 +108,21 @@ $$
 [Unigram](https://arxiv.org/pdf/1804.10959) 算法较复杂一些，WordPiece 算法与 BPE 算法的词表构建是由小到大，而 Unigram 算法是由大到小，Unigram 算法会预先使用某种启发算法，比如 BPE 或 WordPiece，生成一个很大的词表，然后进行迭代，每一步迭代会从词表中剔除一个词语单元直至词表达到预定大小，该词语单元需要满足，对于训练语料是由当前词表构成的似然，它的影响最小的，似然可以写为如下形式：
 
 $$
-L=\sum_{i=1}^{N} \prod_{x \in D_i} P(x)
+L = \sum_{i=1}^{N} \log \left( \sum_{j=1}^{K(i)} \prod_{x \in D_{i,j}} p(x) \right)
 $$
 
-其中，假设对于训练语料使用当前词表有 $N$ 种切分方式，每种切分方式所用到的词语单元集合记为 $D_i$。
-
-tokenization 技术涉及**分词器的构建**和**对输入文本进行分词**两方面：
-1. **分词器的构建**：通过某种分词算法使用大量的训练文本（语料）构建词表；
-2. **对输入文本进行分词**：通过某种分词算法基于训练好的词表对输入文本进行分词。
-
-主要的分词算法有 BPE、WordPiece 和 Unigram 三种，目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level [Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
-
-> Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
+其中，假设训练语料可先切分为 $N$ 段，对于第 $i$ 段有 $K(i)$ 种切分方式，每种切分方式所用到的词语单元集合记为 $D_{i, j}$。
 
 ##### **2.1.2.2.4 总结**
 
-对于这三种分词算法，Unigram 算法最为复杂，它属于 X-gram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 算法的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 算法与 BPE 算法的输出结果是唯一的（或者刚性的），Unigram 算法还有一个好处是可以比较方便的对词表进行剪裁。
+对于这三种分词算法，Unigram 算法最为复杂，它属于 X-gram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 算法的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 算法与 BPE 算法的输出结果是唯一的（或者刚性的），Unigram 算法还有一个好处是可以比较方便的对词表进行剪裁。[SentencePiece](https://github.com/google/sentencepiece) 是目前非常流程的分词工具，它集成了 Unigram（默认）和 BPE 算法，它将文本视为字符流，无需依赖特定语言的预处理或后处理。
 
-##### **2.1.2 分词阶段**
+目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level Byte Pair Encoding（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
+
+> Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
+
+
+### **2.1.3 其他**
 
 在实际应用中，文本归一化（Text Normalization）是构建词表前的关键预处理步骤，目的是将不同形式、书写习惯或字符表示的文本统一为一致的格式，以避免因表面形式的差异导致分词错误。  
 
@@ -152,7 +140,7 @@ tokenization 技术涉及**分词器的构建**和**对输入文本进行分词*
 1. 词表是越大越好，还是越小越好？
 2. 目前 LLM 的词表尺寸是不小的，比如 DeepSeek V3 为 12.8k，对于这种大尺寸的词表，应该如何实现高效的分词？
 
-#### **2.2 词嵌入（Word Embedding）**
+## **2.2 词嵌入（Word Embedding）**
 
 **词嵌入（Word Embedding）的核心任务是将 tokenizer 输出的每个 token 映射为一个稠密向量（Dense Vector）。**例如，token“今天”可能被转化为向量 $[1.1, 1.2, 2.0]$。
 
@@ -524,3 +512,9 @@ D_{KL}(P \parallel Q)   &= \mathbb{E}_{y \sim P} \left[ \log \frac{P(y)}{Q(y)} \
 \end{aligned}
 \end{equation}
 $$
+
+> 注：<br>算法与硬件相互考量的 co-design 设计可能是未来的趋势。<br>推荐阅读：[Insights into DeepSeek-V3: Scaling Challenges and Reflections on
+Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
+
+
+{% bibliography --cited --file transformer.bib %}

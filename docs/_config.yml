@@ -32,6 +32,7 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-toc
+  - jekyll-scholar
 
 # Exclude from processing.
 # The following items will not be processed, by default.
@@ -60,6 +61,9 @@ collections:
   storage_box:
     output: true
     permalink: /:collection/:path/
+
+# scholar:
+#   style: modern-language-association
 
 defaults:
   - scope:
