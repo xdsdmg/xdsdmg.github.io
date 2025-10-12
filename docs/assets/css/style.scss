@@ -6,3 +6,22 @@
   "minima/skins/{{ site.minima.skin | default: 'classic' }}",
   "minima/initialize";
 // @import "highlight.css";
+
+ol.bibliography {
+  list-style-type: none;
+  counter-reset: bib-counter;
+  padding-left: 0 !important;  /* 强制去除左内边距 */
+  margin-left: 0 !important;   /* 强制去除左外边距 */
+}
+
+ol.bibliography li {
+  counter-increment: bib-counter;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1em;
+  margin-left: 0 !important;   /* 确保列表项没有左边距 */
+}
+
+ol.bibliography li:before {
+  content: "[" counter(bib-counter) "] ";
+}

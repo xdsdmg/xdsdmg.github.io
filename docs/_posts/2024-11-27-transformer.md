@@ -517,5 +517,6 @@ $$
 > 注：<br>算法与硬件相互考量的 co-design 设计可能是未来的趋势。<br>推荐阅读：[Insights into DeepSeek-V3: Scaling Challenges and Reflections on
 Hardware for AI Architectures](https://arxiv.org/pdf/2505.09343)
 
+# 参考文献
 
 {% bibliography --file transformer.bib %}
