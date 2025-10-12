@@ -7,8 +7,7 @@ categories: post
 
 # **1. 引言**
 
-
-Transformer {% cite DBLP:journals/corr/VaswaniSPUJGKP17 --file transformer.bib %} 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (Large Language Model，LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
+Transformer {% cite transformer --file transformer.bib %} 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (Large Language Model，LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
 
 这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程，**最大的目标是能让大家感受到一些 AI 之美**。
 
@@ -20,16 +19,19 @@ Transformer {% cite DBLP:journals/corr/VaswaniSPUJGKP17 --file transformer.bib %
 
 # **2. 如何将文本转化为可计算的数学向量**
 
-> **关键问题**：<br>LLM 本质上是基于概率的数学建模系统，但自然语言符号本身不具备可计算性，所以计算机是如何对文字进行计算的呢？计算机究竟对文字进行了哪些处理？
+> **关键问题**：
+- LLM 本质上是基于概率的数学建模系统，但自然语言符号本身不具备可计算性，那计算机是如何对文字进行计算的呢？计算机究竟对文字进行了哪些处理？
+- LLM 的输入、输出甚至计算的基本单元都是 token，token 是什么？文本是如何转化为 token 的？
+- 对于不同语言，字符密集型的语言（如：汉语、日语等）与非字符密集型的语言（如：英语、法语等）的处理过程是否有差异？
 
-Transformer 是一种主要应用于自然语言处理（Natural Language Processing，NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学表示，这一步骤是所有 NLP 模型的基础和关键。
+Transformer 是一种主要应用于自然语言处理（Natural Language Processing，NLP）领域的 Seq2Seq 模型。在深入理解 Transformer 之前，首先需要了解 NLP 任务中如何将文本转换为可计算的数学表示，这一步骤是所有 NLP 模型的基础和关键，也是迈入 NLP 领域的起点。 
 
 > 注：<br> **Seq2Seq 模型**：在 NLP 中，Seq2Seq（Sequence-to-Sequence）泛指一类模型，这类模型的核心思想是将输入序列映射为输出序列，两者长度可以不同。
 
-计算机通过分词（Tokenization）与词嵌入（Word Embedding）两个步骤对文本进行预处理，将其转化为可计算的数学表示。
+在 LLM 中，通过分词（Tokenization）与词嵌入（Word Embedding）两个步骤对文本进行预处理，将文本转化为可计算的数学表示。
 
-- **分词**：将一段文本分割为一系列词语单元。
-- **词嵌入**：将通过分词得到的一系列词语单元逐个转化为数值向量。
+- **分词**：将一段文本分割为一系列词语单元，这里的词语单元就是我们经常看到的 token。
+- **词嵌入**：将通过分词得到的一系列 token 逐个转化为数值向量，每个 token 会具有一个唯一 ID（比如：1、2、3 等），词嵌入会将每个 token 的 ID 转化为一个数值向量。
 
 ## **2.1 分词（Tokenization）**
 
@@ -37,15 +39,13 @@ Transformer 是一种主要应用于自然语言处理（Natural Language Proces
 
 ### **2.1.1 什么样的分词算法是好的？**
 
-最直观的想法是，我们希望分词的结果能很好地保留语义特征，比如“苹果”这个词，希望其在分词结果中被保留为一个完整的词语单元，而不是被切分成“苹“和”果”两个词语单元，切分的粒度太粗或太细都是不好的。
+最直观的想法是，我们希望**分词的结果能很好地保留语义特征**，比如“苹果”这个词，希望其在分词结果中被保留为一个完整的词语单元，而不是被切分成“苹“和”果”两个词语单元，切分的粒度太粗或太细都是不好的。然后，**要能很好地适应各种类型的语言和文字符号**（如：数值、Emoji 等）。另外，**要有较好的工程效率**，能够较快地对文本完成分词与逆分词，能够为下游训推任务减轻负担。
 
 ### **2.1.2 各式各样的分词算法**
 
-> 推荐阅读：[Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)
-
 #### **2.1.2.1 基于规则的分词**
 
-早期的分词算法通常是基于某种规则对输入文本进行分割，比如空格，标点等。下面的例子来自 [Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)。
+早期的分词算法通常是基于各种规则对输入文本进行分割，比如空格，标点等，下面的例子来自 [Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)。
 
 ```
 Don't you love Transformer? We sure do.
@@ -63,16 +63,16 @@ Don't you love Transformer? We sure do.
 "Don", "'", "t", "you", "love", "Transformer", "?", "We", "sure", "do", "."
 ```
 
-但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意味，比如 apples 分解为 `"apple", "s"`，doing 分解为 `"do", "ing"`。
+但对于 `Don't` 的分词结果 `"Don", "'", "t"` 还不够理想，希望通过特定规则将其分解为 `"Do", "n't"`，其中 `n't` 为 `Do` 增加否定之意，这里已经有了子词的意味，再举几个例子，比如将 apples 分解为 `"apple", "s"`，将 doing 分解为 `"do", "ing"`。
 
 ```
 "Do", "n't", "you", "love", "Transformer", "?", "We", "sure", "do", "."
 ```
 
 根据分词的粒度，可以将基于规则的分词算法分为三种：
-1. **基于字母的分词**，这种分词算法的结果数量最少（分割粒度过细），但会增大下游任务的复杂度，有一个比较形象的例子，其实我们可以用红绿蓝表示任何一种颜色（RGB 值），类似于直接使用字母进行分词，但在日常生活中，比如挑选口红，我们不会使用 RGB 值，这样会很不方便，而是一些约定俗成的色号；
-2. **基于单词的分词**，这种分词算法的结果数量过大（分割粒度过粗），会降低模型的泛化性；
-3. **基于子词的分词**，这是一种比较折中的方案。
+- **基于字母的分词**，这种分词算法的结果数量最少（分割粒度过细），但会增大下游任务的复杂度，有一个比较形象的例子，其实我们可以用红绿蓝表示任何一种颜色（RGB 值），类似于直接使用字母进行分词，但在日常生活中，比如挑选口红，我们不会使用 RGB 值，这样会很不方便，而是一些约定俗成的色号；
+- **基于单词的分词**，这种分词算法的结果数量过大（分割粒度过粗），会降低模型的泛化性；
+- **基于子词的分词**，这是一种比较折中的方案，将文本中的单词分解为基本单词和附加部分，附加部分为基本单词添加额外含义，比如否定、复数、时态等。
 
 #### **2.1.2.2 基于统计的分词**
 
@@ -80,7 +80,7 @@ Don't you love Transformer? We sure do.
 
 ##### **2.1.2.2.1 WordPiece**
 
-对于训练语料，先基于最基本的词语组成单元构成一个初始词表，比如对于英文语料，可能是英文字母和常见的标点符号；对于中文，可能是基础汉字和常见的标点符号；对于现代大语言模型，可能就是 256 种可能的字节。
+在 WordPiece {%cite wu2016googlesneuralmachinetranslation --file transformer.bib %} 中，对于训练语料，先基于最基本的词语组成单元构成一个初始词表，比如对于英文语料，可能是英文字母和常见的标点符号；对于中文，可能是基础汉字和常见的标点符号；对于现代大语言模型，可能就是 256 种可能的字节。
 
 基于初始词表，经过一定轮数的迭代形成最终的词表，迭代的终止条件一般是词表的大小达到预定的要求，每轮迭代会选出一个新的词语单元添加进词表，选取方法如下公式所示：
 
@@ -94,9 +94,9 @@ $$
 
 这个思路基于这样一种概率理论，对于事件 $X$ 与事件 $Y$，$\frac{p(X, Y)}{p(X)p(Y)}$ 的值越大，事件 $X$ 与事件 $Y$ 的相关性越强。
 
-##### **2.1.2.2.2 Byte-Pair Encoding(BPE)**
+##### **2.1.2.2.2 Byte-Pair Encoding (BPE)**
 
-[Byte Pair Encoding](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)（BPE）算法和 WordPiece 非常相似，只是 BPE 是直接选取 ${\rm count} (x y)$ 最大的 $x y$ 作为新的词语单元。
+Byte Pair Encoding（BPE）{% cite shibata1999byte --file transformer.bib %} 算法和 WordPiece 算法非常相似，只是 BPE 算法是直接选取 ${\rm count} (x y)$ 最大的 $x y$ 作为新的词语单元。
 
 $$
 \begin{equation}
@@ -106,21 +106,21 @@ $$
 
 ##### **2.1.2.2.3 Unigram**
 
-[Unigram](https://arxiv.org/pdf/1804.10959) 算法较复杂一些，WordPiece 算法与 BPE 算法的词表构建是由小到大，而 Unigram 算法是由大到小，Unigram 算法会预先使用某种启发算法，比如 BPE 或 WordPiece，生成一个很大的词表，然后进行迭代，每一步迭代会从词表中剔除一个词语单元直至词表达到预定大小，该词语单元需要满足，对于训练语料是由当前词表构成的似然，它的影响最小的，似然可以写为如下形式：
+Unigram {% cite kudo2018subwordregularizationimprovingneural --file transformer.bib %} 算法较复杂一些，WordPiece 算法与 BPE 算法的词表构建是由小到大，而 Unigram 算法是由大到小，Unigram 算法会预先使用某种启发算法，比如 BPE 算法或 WordPiece 算法，生成一个很大的词表，然后进行迭代，每一步迭代会从词表中剔除一个词语单元直至词表达到预定大小，该词语单元需要满足，对于训练语料是由当前词表构成的似然，它的影响最小的，似然可以写为如下形式：
 
 $$
 L = \sum_{i=1}^{N} \log \left( \sum_{j=1}^{K(i)} \prod_{x \in D_{i,j}} p(x) \right)
 $$
 
-其中，假设训练语料可先切分为 $N$ 段，对于第 $i$ 段有 $K(i)$ 种切分方式，每种切分方式所用到的词语单元集合记为 $D_{i, j}$。
+其中，假设训练语料可先切分为 $N$ 段，对于第 $i$ 段有 $K(i)$ 种切分方式，每种切分方式所用到的词语单元集合记为 $D_{i, j}$。Unigram 算法的工程实现中通常使用 [Viterbi 算法](https://zh.wikipedia.org/wiki/%E7%BB%B4%E7%89%B9%E6%AF%94%E7%AE%97%E6%B3%95)进行优化求解。
 
 ##### **2.1.2.2.4 总结**
 
-对于这三种分词算法，Unigram 算法最为复杂，它属于 X-gram 语言模型系列，它虽然复杂，但有一个好处是，Unigram 算法的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 算法与 BPE 算法的输出结果是唯一的（或者刚性的），Unigram 算法还有一个好处是可以比较方便的对词表进行剪裁。[SentencePiece](https://github.com/google/sentencepiece) 是目前非常流程的分词工具，它集成了 Unigram（默认）和 BPE 算法，它将文本视为字符流，无需依赖特定语言的预处理或后处理。
+对于这三种分词算法，Unigram 算法最为复杂，它属于 [n-gram 语言模型](https://zh.wikipedia.org/wiki/N%E5%85%83%E8%AF%AD%E6%B3%95)中最简单的一种，它虽然复杂，但有一个好处是，Unigram 算法的分词结果是一个概率分布，tokenizer 可根据分词结果进行采样，它的输出是弹性的，也更为灵活；WordPiece 算法与 BPE 算法的输出结果是唯一的（或者刚性的），Unigram 算法还有一个好处是可以比较方便的对词表进行剪裁。WordPiece 算法与 BPE 算法可以将词表组织为数组形式的 [Trie](https://zh.wikipedia.org/wiki/Trie) 数据结构以提升分词效率。
+
+[SentencePiece](https://github.com/google/sentencepiece) 是目前非常流行的分词工具，它集成了 Unigram 算法（默认）和 BPE 算法，它将文本视为字符流，无需依赖特定语言的预处理或后处理，对于各种语言都有较好的支持。
 
 目前 LLM（如 DeepSeek V3）普遍采用 **Byte-level Byte Pair Encoding（BBPE）**分词算法，该算法在字节级别构建词表，能更好地处理多语言和特殊字符。 
-
-> Byte Pair Encoding 算法的逻辑其实非常简单，大家如果感兴趣可以看[论文](https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=1e9441bbad598e181896349757b82af42b6a6902)的第 4 页。<br><br>**Find the most frequent pair of consecutive two character codes in the text, and then substitute an unused code for the occurrences of the pair.**
 
 
 ### **2.1.3 其他**
@@ -133,27 +133,27 @@ $$
 
 如果平常大家有使用 Hugging Face 下载 LLM 文件，会发现每个模型仓库里基本都会有一个`tokenizer.json`文件，这个文件存储了 tokenizer 完整的配置信息，当然也包括词表数据。 
 
-推荐材料：
-1. 如果想进一步了解各种词表构建算法，可阅读这篇[文章](https://zhuanlan.zhihu.com/p/652520262)；
+>**推荐材料**：
+1. 如果想进一步了解各种词表构建算法，可阅读这篇 [Summary of the tokenizers](https://huggingface.co/docs/transformers/tokenizer_summary)；
 2. 如果对于 Tokenizer 的实现感兴趣，可以看看 Hugging Face 提供的 Tokenizer 的 Rust 实现（[代码仓库](https://github.com/huggingface/tokenizers)）。
-
-一些问题：
-1. 词表是越大越好，还是越小越好？
-2. 目前 LLM 的词表尺寸是不小的，比如 DeepSeek V3 为 12.8k，对于这种大尺寸的词表，应该如何实现高效的分词？
 
 ## **2.2 词嵌入（Word Embedding）**
 
-**词嵌入（Word Embedding）的核心任务是将 tokenizer 输出的每个 token 映射为一个稠密向量（Dense Vector）。**例如，token“今天”可能被转化为向量 $[1.1, 1.2, 2.0]$。
+**词嵌入（Word Embedding）的核心任务是将 tokenizer 输出的每个 token 对应的 [One-Hot 向量](https://zh.wikipedia.org/wiki/%E7%8B%AC%E7%83%AD)映射为一个稠密向量（Dense Vector）。**例如，token“今天”可能被转化为向量 $[1.1, 1.2, 2.0]$。
 
 为什么叫“词嵌入”（Embedding）而不是“向量化”？
-这一术语的起源可以追溯到 2013 年 Google AI 提出的 [Word2vec](https://arxiv.org/abs/1301.3781) 模型。词嵌入不仅实现了简单的向量化，还蕴含了更深层的设计理念：
+这一术语的起源可以追溯到 2013 年 Google AI 提出的 Word2vec {% cite mikolov2013efficientestimationwordrepresentations --file transformer.bib %} 模型。词嵌入不仅实现了简单的向量化，还蕴含了更深层的设计理念：
 1. **语义编码**：语义相近的词，其向量在空间中的距离较近；语义无关的词，向量距离较远。
 2. **上下文适应性**：同一个词在不同语境下可能对应不同的向量表示（如多义词），从而承载更丰富的语义信息。
 3. **高维表征**：为了捕捉复杂的语义关系，词向量通常是多维的（几十维到几百维），远高于简单的“向量化”所暗示的数学操作。
 
 因此，**词嵌入强调的是将离散的词语嵌入到连续的向量空间中，并保留其语义关联**，而不仅仅是形式上的向量转换。
 
-推荐阅读：[没有思考过 Embedding，不足以谈 AI]( https://zhuanlan.zhihu.com/p/643560252)
+其实词嵌入的实现非常简单，通过将 token 对应的 One-Hot 向量乘以一个嵌入矩阵实现，如果词表的长度为 $N$，模型的维度为 $d_m$，嵌入矩阵 $M_{\rm embedding} \in \mathbb{R}^{N \times d_m}$。
+
+还有一点，如果词表过大，那么 $M_{\rm embedding}$ 的维度也会增大，会增加词嵌入过程的计算量；如果词表过小，虽然会降低词嵌入过程的计算量，但同样长度的文本生成的 token 会更多，会增加下游训推任务的压力。
+
+> **推荐材料**：<br>[没有思考过 Embedding，不足以谈 AI]( https://zhuanlan.zhihu.com/p/643560252)
 
 ### **3. Transformer 诞生的历史背景**
 

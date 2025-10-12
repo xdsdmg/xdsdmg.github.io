@@ -17,11 +17,13 @@ ol.bibliography {
 ol.bibliography li {
   counter-increment: bib-counter;
   position: relative;
-  display: inline-block;
+  padding-left: 2em;
   margin-bottom: 1em;
   margin-left: 0 !important;   /* 确保列表项没有左边距 */
 }
 
 ol.bibliography li:before {
-  content: "[" counter(bib-counter) "] ";
+  content: "[" counter(bib-counter) "]";
+  position: absolute;
+  left: 0;
 }
