@@ -63,14 +63,11 @@ collections:
     permalink: /:collection/:path/
 
 scholar:
-  style: apa
   locale: en
   bibliography_list_tag: ol
   bibliography_list_class: bibliography
   bibliography_item_tag: li
-  replace_urls: true  # 自动将 URL 转换为链接
-  source_url: true    # 启用源链接
-  links: true
+  style: "assets/apa.csl"
 
 defaults:
   - scope:
