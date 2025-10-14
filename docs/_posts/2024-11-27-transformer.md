@@ -242,6 +242,8 @@ $$
 
 其中，$\mathbf{q} \in \mathbb{R}^d$ 为查询向量（Query），$\mathbf{k}_i \in \mathbb{R}^d$ 为键向量（Key），$\mathbf{v}_i \in \mathbb{R}^m$ 为值向量（Value），$K(\cdot,\cdot)$ 为注意力评分函数。
 
+> 注：${\rm softmax}$ 是一种在机器学习中广泛使用的算子，对于向量 $\mathbf{x} = [x_1, x_2, \dots ,x_n]$，${\rm softmax}\_i(\mathbf{x}) = \frac{e^{x_i}}{\sum^n_{k=1}e^{x_k}}$，它可以将 $\mathbf{x}$ 中的每个元素转化为一个 $0$ 至 $1$ 间的值，且所有元素转化后的值和为 $1$。
+
 现代注意力机制主要采用两种评分函数：
 
 - **加性注意力（Additive Attention）**：$K(\mathbf{q}, \mathbf{k}) = \mathbf{w}^T \sigma(\mathbf{W}_q\mathbf{q} + \mathbf{W}_k\mathbf{k})$
@@ -260,7 +262,6 @@ $$
 
 ## **3.3 Transformer 想解决什么问题**
 
-
 <div align="center">
 <img src="https://zh-v2.d2l.ai/_images/cnn-rnn-self-attention.svg" width="90%"/>
 </div>
@@ -278,7 +279,7 @@ Transformer 主要想达到这两个目标：
 
 Transformer 是一个完全基于注意力机制的 Seq2Seq 模型，其核心创新在于完全摒弃了 RNN 与 CNN，仅依靠自注意力机制和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，其论文的标题才命名为"Attention Is All You Need"。
 
-图 1 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
+图 2 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
 
 <div align="center">
 <img src="/assets/imgs/transformer/arch.png" width="70%"/>
@@ -338,8 +339,6 @@ $$
 \mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j} = \sum^n_{k=1} \frac{\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}}{\sqrt{d}}}{\sum^n_{m=1}\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{m, j}}}{\sqrt{d}}} \cdot \mathbf{v}_{k, j}
 $$
 
-> 注：${\rm softmax}$ 是一种在机器学习中广泛使用的算子，对于向量 $\mathbf{x} = [x_1, x_2, \dots ,x_n]$，${\rm softmax}\_i(\mathbf{x}) = \frac{e^{x_i}}{\sum^n_{k=1}e^{x_k}}$，它可以将 $\mathbf{x}$ 中的每个元素转化为一个 $0$ 至 $1$ 间的值，且所有元素转化后的值和为 $1$。
-
 可以看出，对于第 $j$ 个头，其输出 $\mathbf{o}_{i, j}$ 为 $[\mathbf{v}\_{1,j}, \mathbf{v}\_{2,j},\dots,\mathbf{v}\_{n,j}]$ 的线性组合，可以简写为 $\mathbf{o}\_{i, j} = \sum^n\_{k=1} \alpha\_k \mathbf{v}\_{k,j}$，在机器学习中通常用向量的内积来衡量两个向量的相似度，$\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 的内积越大，或 $\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 越相似，$\mathbf{v}\_{k,j}$ 的权重 $\alpha_k$ 就会越大，$\mathbf{v}\_{k,j}$ 所占的比重就会越大。**简单来讲就是，与当前的词越相近的词，对结果的影响越大。**
 
 最后，将所有头的输出拼接并通过线性变换：
@@ -348,7 +347,7 @@ $$
 \mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
 $$
 
-从图 1 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
+从图 2 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
 Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），
 Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 底部的多头注意力机制为交叉注意力机制。
 
@@ -370,18 +369,18 @@ Decoder 负责基于 Encoder 生成的中间表示自回归生成结果，对于
 
 Decoder 采用自回归方式生成输出，其核心约束是：当前时刻的预测只能依赖于已生成的输出（即历史信息）。这种时序依赖性通过注意力掩码（attention mask）实现，具体表现为：
 
-1. **训练阶段**：  
-   - 采用**因果掩码（causal mask）**，确保第 $i$ 个位置的 query 只能访问前 $i$ 个位置的 key-value 对。  
-   - 这种掩码通常通过一个下三角矩阵（元素为 $-\infty$ 或 $0$）实现，使得 softmax 计算时未来位置的概率接近 $0$。  
-   - 公式中的求和上限为当前位置 $i$，但实际实现时通常仍计算所有位置的注意力分数，再通过掩码屏蔽未来信息：  
+**训练阶段**：  
+- 采用**因果掩码（causal mask）**，确保第 $i$ 个位置的 query 只能访问前 $i$ 个位置的 key-value 对。  
+- 这种掩码通常通过一个下三角矩阵（元素为 $-\infty$ 或 $0$）实现，使得 softmax 计算时未来位置的概率接近 $0$。  
+- 公式中的求和上限为当前位置 $i$，但实际实现时通常仍计算所有位置的注意力分数，再通过掩码屏蔽未来信息：  
 
-   $$
-   \mathbf{o}_{i, j} = \sum^{l}_{k=1} \text{mask}(k \leq i) \cdot {\rm softmax}_k\left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}\right) \cdot \mathbf{v}_{k, j}
-   $$
+$$
+\mathbf{o}_{i, j} = \sum^{l}_{k=1} \text{mask}(k \leq i) \cdot {\rm softmax}_k\left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}\right) \cdot \mathbf{v}_{k, j}
+$$
 
-2. **推理阶段**：  
-   - 由于解码是逐步进行的（每次生成一个 token），模型只需计算当前 query 与历史 key-value 对的注意力，无需显式掩码。  
-   - 为提升效率，通常会缓存（cache）历史 key-value 对，避免重复计算。 
+**推理阶段**：  
+- 由于解码是逐步进行的（每次生成一个 token），模型只需计算当前 query 与历史 key-value 对的注意力，无需显式掩码。  
+- 为提升效率，通常会缓存（cache）历史 key-value 对，避免重复计算。 
 
 $$
 \mathbf{o}_{i, j} = \sum^{\color{red} i}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j}
@@ -395,33 +394,37 @@ $$
 \mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T {\mathbf{\color{red} u}_{\color{red} k}}}{\sqrt{d}}) \cdot \mathbf{\color{red} u}_{\color{red} k}
 $$
 
-该机制实现了 Encoder-Decoder 之间的信息桥接，是序列到序列建模的关键组件。
-
-这种设计使得模型能够：
-
-1. 同时关注不同位置的表示子空间
-2. 学习更丰富的上下文依赖关系
-3. 提高模型的泛化能力
+该机制实现了 Encoder-Decoder 之间的信息桥接，是序列到序列建模的关键组件，这种设计使得模型能够：
+- 同时关注不同位置的表示子空间；
+- 学习更丰富的上下文依赖关系；
+- 提高模型的泛化能力。
 
 ## **4.2 位置编码**
 
-自注意力机制本身具有置换不变性（permutation invariant），这意味着其对输入序列的顺序不敏感。为了保留关键的序列位置信息，Transformer 引入了位置编码机制。该机制通过将位置信息与词嵌入向量相加来实现：
+自注意力机制本身具有置换不变性（Permutation Invariance），当前的 query 相对于某一个 key-value 对的权重与当前 key-value 对在序列中的位置是无关的，这意味着其对输入序列的顺序不敏感，为了保留关键的序列位置信息，Transformer 引入了位置编码机制。
+
+> 注：<br>**Permutation Invariance** is a property of a mathematical function or algorithm that remains unchanged even when the order of its inputs is altered.
+
+这个设计基于这样一种想法，**同样的一个词对，它们距离得越近，相关程度应该越大**，比如，一本书中的某个词对，它们在同一页中的相关程度要比在不同章节中的相关程度要大。
+
+位置编码主要实现两个目标：
+- 打破置换不变性；
+- 具有远程衰减。
+
+该机制通过将词嵌入向量与位置编码信息相加来实现，原始 Transformer 论文中使用的位置编码被称为 Sinusoidal 位置编码，实现如下公式所示，
 
 $$
-\mathbf{t}_i = \mathbf{t}_i + \mathrm{PE}(i)
+\begin{equation}
+\begin{aligned}
+PE_{(pos, 2i)} & = \sin(pos / 10000^{2i/d_{\rm model}}) \\
+PE_{(pos, 2i+1)} & = \cos(pos / 10000^{2i/d_{\rm model}})
+\end{aligned}
+\end{equation}
 $$
 
-其中位置编码函数 $\mathrm{PE}(i)$ 的设计遵循以下原则：
-1. **唯一性**：每个位置具有独一无二的编码表示
-2. **可扩展性**：能够处理超出训练时所见长度的序列
-3. **稳定性**：具有良好的梯度传播特性，便于模型优化
+其中，$pos$ 表示当前 token 在序列中的位置，$i$ 表示 token 的维度。
 
-位置编码采用正弦和余弦函数的组合形式，这种设计具有以下优势：
-- 可以表示绝对位置信息
-- 允许模型学习相对位置关系
-- 能够自然地扩展到更长的序列长度
-
-值得注意的是，由于自注意力机制的本质特性，相同的 Key-Value 对在不同位置与 Query 的计算结果理论上应该相同。然而，通过引入位置编码，Query 和 Key 的点积运算中自然地包含了位置角度信息，这使得模型能够区分不同位置的相同内容。
+Transformer 原始论文中并未具体说明为什么要这样设计，如果想深入了解，可以阅读 {% cite kexuefm-8231 --file transformer.bib %}。
 
 ## **4.3 Add & Norm**
 
