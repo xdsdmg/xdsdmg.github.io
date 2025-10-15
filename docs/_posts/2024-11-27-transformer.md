@@ -401,7 +401,7 @@ $$
 
 ## **4.2 位置编码**
 
-自注意力机制本身具有置换不变性（Permutation Invariance），当前的 query 相对于某一个 key-value 对的权重与当前 key-value 对在序列中的位置是无关的，这意味着其对输入序列的顺序不敏感，为了保留关键的序列位置信息，Transformer 引入了位置编码机制。
+自注意力机制本身具有置换(轮换)不变性（Permutation Invariance），在注意力机制中，当前的 query 与某一个 key-value 对的计算结果与当前 key-value 对在序列中的位置是无关的，这意味着模型无法识别输入序列的位置信息，为了保留关键的位置信息，Transformer 引入了位置编码机制。
 
 > 注：<br>**Permutation Invariance** is a property of a mathematical function or algorithm that remains unchanged even when the order of its inputs is altered.
 
@@ -409,9 +409,9 @@ $$
 
 位置编码主要实现两个目标：
 - 打破置换不变性；
-- 具有远程衰减。
+- 能够表达相对位置信息，并具有远程衰减性质。
 
-该机制通过将词嵌入向量与位置编码信息相加来实现，原始 Transformer 论文中使用的位置编码被称为 Sinusoidal 位置编码，实现如下公式所示，
+该机制通过将词嵌入向量与位置编码信息相加来实现，原始 Transformer 论文中使用的位置编码被称为 Sinusoidal 位置编码，实现如下公式所示：
 
 $$
 \begin{equation}
@@ -422,9 +422,23 @@ PE_{(pos, 2i+1)} & = \cos(pos / 10000^{2i/d_{\rm model}})
 \end{equation}
 $$
 
-其中，$pos$ 表示当前 token 在序列中的位置，$i$ 表示 token 的维度。
+其中，$pos$ 表示当前 token 在序列中的位置，$i$ 表示 token 的维度特征。
 
-Transformer 原始论文中并未具体说明为什么要这样设计，如果想深入了解，可以阅读 {% cite kexuefm-8231 --file transformer.bib %}。
+Transformer 原始论文中并未具体说明为什么要这样设计，如果想深入了解，可以阅读 {% cite kexuefm-8231 --file transformer.bib %}，里面的数学推导有一些复杂，从中可以看出这个设计需要满足一定限制才能实现上述目标，比如 PE 不能过大。
+
+还有很多其他的位置编码技术，目前比较火的是旋转位置编码（Rotary Position Embedding，RoPE）{% cite su2023roformerenhancedtransformerrotary --file transformer.bib %}，在 DeepSeek 系列模型中有广泛使用，它的设计其实非常简单，如下公式所示：
+
+$$
+\begin{equation}
+\begin{aligned}
+\mathbf{q}^{\rm rope}_i &= \mathcal{R}(i \theta) \mathbf{q}_i  \\
+\mathbf{k}^{\rm rope}_j &= \mathcal{R}(j \theta) \mathbf{k}_j  \\
+\left \langle \mathbf{q}^{\rm rope}_i, \mathbf{k}^{\rm rope}_j \right \rangle  &= \mathbf{q}_i^T \mathcal{R}(i \theta)^T \mathcal{R}(j \theta) \mathbf{k}_j = \mathbf{q}_i^T \mathcal{R}(-i \theta) \mathcal{R}(j \theta) \mathbf{k}_j = \mathbf{q}_i^T \mathcal{R}((j-i) \theta) \mathbf{k}_j
+\end{aligned}
+\end{equation}
+$$
+
+其中，$q_i$ 为第 $i$ 个 token 对应的 query，$k_j$ 为第 $j$ 个 token 对应的 key，$\mathcal{R}(m \theta)$ 为对应的[旋转矩阵](https://zh.wikipedia.org/wiki/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5)。想要详细了解 RoPE 可以看看这个视频（[旋转位置编码RoPE的简单理解](https://www.bilibili.com/video/BV1CQoaY2EU2/?spm_id_from=333.788.videopod.sections&vd_source=30199bd82fc917072f79b98bb0ab9c36)）。
 
 ## **4.3 Add & Norm**
 
