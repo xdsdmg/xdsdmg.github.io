@@ -442,73 +442,57 @@ $$
 
 ## **4.3 Add & Norm**
 
-Transformer 架构在每个子层（包括自注意力层和前馈网络层）后都采用了以下关键设计：
+Transformer 架构对每个子层（自注意力层、前馈网络层）都采用了 Add & Norm，即每个子层的输出为 ${\rm LayerNorm(x + {\rm SubLayer}(x))}$，其中，${\rm SubLayer}(\cdot)$ 为当前子层的实现，${\rm LayerNorm}$ 为层归一化。
 
-1. **残差连接（Residual Connection）**
-   - 数学形式：$\mathbf{x} + \mathrm{Sublayer}(\mathbf{x})$
-   - 功能作用：
-     * 建立直接的梯度传播路径
-     * 有效缓解深层网络的梯度消失问题
-     * 使模型能够学习残差映射而非完整变换
+### **4.3.2 残差连接**
 
-2. **层归一化（Layer Normalization）**
-   - 操作方式：沿特征维度进行归一化
-   - 核心优势：
-     * 稳定各层的输入分布
-     * 加速模型收敛
-     * 减少对初始化的敏感性
+> 这一小节主要参考 [DIVE INTO DEEP LEARNING 7.6 小节](https://zh-v2.d2l.ai/chapter_convolutional-modern/resnet.html)
 
-**领域差异说明**：
-- 计算机视觉（CV）中常采用批归一化（BatchNorm）：沿批次维度归一化
-- 自然语言处理（NLP）中偏好层归一化（LayerNorm）：沿特征维度归一化
-（这种差异主要源于文本数据的变长特性与批处理挑战）
+残差连接（Residual Connection）最早源于 {% cite he2015deepresiduallearningimage --file transformer.bib %} ，用于构建图像识别的深层神经网络，这个设计对如何构建深层神经网络产生了深远的影响。残差连接的核心理念是每个附加层都应该更容易地包含原始函数作为其元素之一。
 
-这种 Add & Norm 的组合设计：
-- 使深层Transformer（如12层以上的模型）能够稳定训练
-- 成为Transformer架构成功的关键因素之一
-- 后续被多种神经网络架构广泛借鉴
+这种设计有两个好处：
+- **表达能力**：能够保证新函数可以包含原始函数，两者具有嵌套关系，即神经网络的下一层的表达能力一定不会比上一层弱；
+- **数值稳定性**：由于上一层的结果可以直接传递到下一层的输出中，能够有效缓解深层网络的梯度消失问题。
 
-对于$x\in\mathbb{R}^d$
+### **4.3.3 层归一化**
+
+层归一化（Layer Normalization）{% cite ba2016layernormalization --file transformer.bib %} 是沿特征维度对输入进行归一化，假设向量 $\mathbf{x} \in \mathbb{R}^d$，$\mathbf{x}_i$ 表示 $\mathbf{x}$ 的第 $i$ 个元素，$\mathbf{x}$ 的层归一化结果如下所示：
 
 $$
-\mu = \frac{1}{d} \sum^d_{i=1} x_i
+\begin{equation}
+\begin{aligned}
+\hat{\mathbf{x}}_i &= \beta \frac{\mathbf{x}_i - \mu}{\sqrt{\sigma^2 + \epsilon}} +\gamma \\
+\mu &= \frac{1}{d} \sum^d_{i=1} \mathbf{x}_i  \\
+\sigma^2 &= \frac{1}{d} \sum^d_{i=1} (\mathbf{x}_i - \mu)^2
+\end{aligned}
+\end{equation}
 $$
 
-$$
-\sigma^2 = \frac{1}{d} \sum^d_{i=1} (x_i - \mu)^2
-$$
+其中，$\epsilon$ 是一个很小的常量，避免分母为 0，保证数值稳定，$\beta$、$\gamma$ 是可学习的参数。
+
+层归一化的作用主要有两点：
+- 稳定各层的输入分布，保证数值稳定性，避免梯度爆炸或消失；
+- 加速模型收敛。
+
+另外，计算机视觉（CV）中常采用批归一化（BatchNorm），即沿批次维度归一化，而 NLP 中偏好层归一化，这种差异主要源于文本数据的变长特性与批处理挑战。
+
+## **4.4 基于位置的前馈网络**
+
+基于位置的前馈网络是一个用 ReLU 激活函数连接起来的两层全连接层，可以写为如下形式：
 
 $$
-\hat{x}_i = \frac{x_i - \mu}{\sqrt{\sigma^2 + \epsilon}}
+{\rm FFN}(x) = \max(0,x W_1 + b_1) W_2 + b_2
 $$
 
-{% 
-assign eq =
-'$$
-\begin{bmatrix}
-    Q_{1,1} & Q_{1,2} & \cdots & Q_{1,{\rm d\_model}} \\
-    Q_{2,1} & Q_{2,2} & \cdots & Q_{2,{\rm d\_model}} \\
-    \vdots  & \vdots  & \ddots & \vdots               \\
-    Q_{{\rm len\_q},1} & Q_{1,2} & \cdots & Q_{1,{\rm d\_model}}
-\end{bmatrix}
-$$'
-%}
+至于为什么叫做基于**位置**的前馈网络？模型各层间的输入与输出的尺寸为 $(b, n, d)$，$b$ 表示 Batch Size，$n$ 表示序列的长度，$d$ 表示模型的维度，在输入抵达 FFN 时，会将输入的尺寸从 $(b, n, d)$ 转化为 $(bn, d)$，然后 FFN 对输入逐行进行计算，上述公式中的 $x$ 表示输入的每一行，基于位置的含义就体现在这里，计算完成后，再将输出的尺寸从 $(bn, d)$ 转化为 $(b, n, d)$。
 
-{{eq}}
+至于为什么要使用 FFN，只有注意力机制不行吗？FFN 主要有以下两个作用：
 
-Collectively, these developments have ushered in an era where scaling model size and computational power is seen as the key to unlocking higher levels of intelligence.
+- **引入非线性变换**：自注意力机制本质上是一个线性加权求和的过程，FFN 中的激活函数能够为模型引入非线性能力，避免层数塌陷。
+- **对信息进行深度加工和转换**：自注意力机制负责处理全局信息，而 FFN 则逐 token 进行计算，提炼出更深层的内在表示。一个常见的比喻是，自注意力机制负责 “沟通” ，让每个词了解其他词在说什么；FFN 负责 “思考” ，让每个词基于沟通得到的信息，自己进行深入的计算和内化。 
+- **提供一种知识存储的机制**：有研究认为，FFN 的两层线性层扮演了“键值记忆”的角色。其中第一个线性层（$W_1$）充当“键”，用于匹配特定的信息模式，而第二个线性层（$W_2$）则输出对应的“值”，即存储的知识或反应。当输入向量的模式与 FFN 学习到的某个“键”匹配时，它就会触发并输出相应的知识。这使得 FFN 层可以存储大量的、独立于上下文的事实知识（Factual Knowledge）。
+- **维持维度稳定性并增加模型容量**：FFN 通常先放大维度再缩小回来。这个“瓶颈”结构既能增加模型的参数数量和容量（使其能够学习更复杂的东西），又能保证输入和输出的维度一致，从而可以轻松地堆叠多个 Transformer 块。
 
-只加大模型的尺寸没有被证明可以提升模型的推理能力（思维链）。
-
-如何激发模型的能量？Rason Path
-
-涌现能力，一种能力在较小的模型中不存在，但在较大的模型中存在。
-
-大模型的发展历史
-
-## **4.4 FFN**
-
-提高稀疏性
 
 $$
 L = - \mathbb{E}_{x \sim p(x)} \mathbb{E}_{y \sim \pi^* (\cdot|x)} [\log \pi (y|x)]
