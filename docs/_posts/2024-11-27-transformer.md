@@ -161,6 +161,15 @@ $$
 
 > **推荐材料**：<br>[没有思考过 Embedding，不足以谈 AI]( https://zhuanlan.zhihu.com/p/643560252)
 
+如果大家使用过 RAG 的话，会发现 RAG 中也有 Embedding 的概念，但 RAG 中的 Embedding 和上面讲解的 Embedding 是有些不同的。RAG 中的 Embedding 是对文本分块后得到的段落进行向量化处理，能够基于向量的内积计算相似度。RAG 中的 Embedding Model 通常也是基于 LLM 训练得到的。
+
+<div align="center">
+<img src="/assets/imgs/transformer/rag-embedding.png" width="100%"/>
+</div>
+<div align="center" style="margin: 10px 0">
+<span style="font-size: 14px">图 1：Qwen3 Embedding Model {% cite zhang2025qwen3embeddingadvancingtext --file transformer.bib %}</span>
+</div>
+
 # **3. Transformer 诞生的历史背景**
 
 > 《Attention Is All You Need》{% cite transformer --file transformer.bib %} 摘要：<br> The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an **attention mechanism**. <br>  <br> 翻译： <br> 主流的序列转换模型基于复杂的递归或卷积神经网络，其中包括一个编码器和一个解码器。性能最好的模型还通过**注意力机制**将编码器和解码器连接起来。
@@ -266,7 +275,7 @@ $$
 <img src="https://zh-v2.d2l.ai/_images/cnn-rnn-self-attention.svg" width="90%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 1：CNN、RNN、自注意力网络结构对比，图源：<a href="https://zh-v2.d2l.ai/chapter_attention-mechanisms/self-attention-and-positional-encoding.html">《动手学深度学习》10.6 小节</a></span>
+<span style="font-size: 14px">图 2：CNN、RNN、自注意力网络结构对比，图源：<a href="https://zh-v2.d2l.ai/chapter_attention-mechanisms/self-attention-and-positional-encoding.html">《动手学深度学习》10.6 小节</a></span>
 </div>
 
 当时主流的序列转换模型是基于 Encoder-Decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
@@ -279,13 +288,13 @@ Transformer 主要想达到这两个目标：
 
 Transformer 是一个完全基于注意力机制的 Seq2Seq 模型，其核心创新在于完全摒弃了 RNN 与 CNN，仅依靠自注意力机制和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，其论文的标题才命名为"Attention Is All You Need"。
 
-图 2 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
+图 3 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
 
 <div align="center">
 <img src="/assets/imgs/transformer/arch.png" width="70%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 2：Transformer 模型架构</span>
+<span style="font-size: 14px">图 3：Transformer 模型架构</span>
 </div>
 
 接下来我们按 Transformer 模型的主要模块来介绍，主要有多头注意力机制、位置编码、前馈神经网络与 Add & Norm 这几个核心模块。
@@ -347,7 +356,7 @@ $$
 \mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
 $$
 
-从图 2 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
+从图 3 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
 Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），
 Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 底部的多头注意力机制为交叉注意力机制。
 
@@ -478,7 +487,9 @@ $$
 
 ## **4.4 基于位置的前馈网络**
 
-基于位置的前馈网络是一个用 ReLU 激活函数连接起来的两层全连接层，可以写为如下形式：
+### **4.4.1 FFN**
+
+基于位置的前馈网络（Position-wise Feed-Forward Networks）是一个使用 ReLU 激活函数连接起来的两层全连接层，可以写为如下形式：
 
 $$
 {\rm FFN}(x) = \max(0,x W_1 + b_1) W_2 + b_2
@@ -490,10 +501,43 @@ $$
 
 - **引入非线性变换**：自注意力机制本质上是一个线性加权求和的过程，FFN 中的激活函数能够为模型引入非线性能力，避免层数塌陷。
 - **对信息进行深度加工和转换**：自注意力机制负责处理全局信息，而 FFN 则逐 token 进行计算，提炼出更深层的内在表示。一个常见的比喻是，自注意力机制负责 “沟通” ，让每个词了解其他词在说什么；FFN 负责 “思考” ，让每个词基于沟通得到的信息，自己进行深入的计算和内化。 
-- **提供一种知识存储的机制**：有研究认为，FFN 的两层线性层扮演了“键值记忆”的角色。其中第一个线性层（$W_1$）充当“键”，用于匹配特定的信息模式，而第二个线性层（$W_2$）则输出对应的“值”，即存储的知识或反应。当输入向量的模式与 FFN 学习到的某个“键”匹配时，它就会触发并输出相应的知识。这使得 FFN 层可以存储大量的、独立于上下文的事实知识（Factual Knowledge）。
-- **维持维度稳定性并增加模型容量**：FFN 通常先放大维度再缩小回来。这个“瓶颈”结构既能增加模型的参数数量和容量（使其能够学习更复杂的东西），又能保证输入和输出的维度一致，从而可以轻松地堆叠多个 Transformer 块。
 
-TODO: MOE、Dense
+
+FFN 能够提供一种知识存储的机制。有研究认为，FFN 的两层线性层扮演了“键值记忆”的角色。其中第一个线性层（$W_1$）充当“键”，用于匹配特定的信息模式，而第二个线性层（$W_2$）则输出对应的“值”，即存储的知识或反应。当输入向量的模式与 FFN 学习到的某个“键”匹配时，它就会触发并输出相应的知识。这使得 FFN 层可以存储大量的、独立于上下文的事实知识（Factual Knowledge）。
+
+FFN 能够维持维度稳定性并增加模型容量。FFN 通常先放大维度再缩小回来。这个“瓶颈”结构既能增加模型的参数数量和容量（使其能够学习更复杂的东西），又能保证输入和输出的维度一致，从而可以轻松地堆叠多个 Transformer 块。
+
+### **4.4.2 MoE 架构 & Dense 架构**
+
+在目前的 LLM 中，大部分参数都集中在 FFN 层中。对于 FFN 层的设计，目前主要有两种架构，一种是 MoE（Mixture of Expert，混合专家）架构，一种是 Dense 架构。
+
+#### **4.4.2.1 Dense 架构**
+
+Dense 架构就是上文讲解的 Transformer FFN 层的架构设计。在 Dense 架构中，每一个输入 token 都会激活整个网络的所有参数。也就是说，对于模型处理的每一个字或词，整个庞大的神经网络都会参与计算，给出输出。模型越大（参数越多），计算量（FLOPS）和内存占用就越高，推理速度也越慢。
+
+Dense 架构的优势主要有两点：
+- 由于所有参数都参与每次计算，模型可以学习到非常复杂和通用的表征，模型的理解表达能力更强。
+- 架构统一，易于实现，训练和推理逻辑简单。
+
+Dense 架构的缺点也很明显，扩展昂贵，要想提升模型能力，最直接的方式就是增加参数量（比如从百亿到千亿、万亿）。但这会导致计算成本、显存占用和能耗呈平方级甚至更快的增长，使得万亿参数级别的 Dense 模型在推理时几乎不现实。
+
+#### **4.4.2.2 MoE 架构**
+
+<div align="center">
+<img src="/assets/imgs/transformer/MoE.png" width="100%"/>
+</div>
+<div align="center" style="margin: 10px 0">
+<span style="font-size: 14px">图 4：DeepSeekMoE {% cite dai2024deepseekmoeultimateexpertspecialization --file transformer.bib %} MoE 架构</span>
+</div>
+
+MoE 架构是为了解决 Dense 模型扩展性瓶颈而诞生的。它的核心思想是 “分而治之”。一个 MoE 层由多个“专家”组成，每个专家本身是一个小型神经网络（例如一个小型 FFN）。同时，有一个关键的“门控网络”或“路由网络”。
+
+MoE 层的工作流程如下：
+1. 对于一个输入 token，门控网络会计算它应该被分配给哪个或哪几个“专家”。
+2. 只有被选中的专家才会被激活并对这个 token 进行计算。
+3. 最后，将各个专家输出的结果根据门控网络的权重进行加权合并，作为最终的输出。
+
+在 MoE 模型中，能够做到有万亿参数，但处理每个 token 时可能只激活其中的几十亿或百亿参数。另外，路由算法至关重要，MoE 算法需要高效、准确地将 token 分配给最合适的专家，糟糕的路由会导致负载不均衡或性能下降，所以 MoE 模型的训练难度会远高于 Dense 模型。
 
 $$
 L = - \mathbb{E}_{x \sim p(x)} \mathbb{E}_{y \sim \pi^* (\cdot|x)} [\log \pi (y|x)]
