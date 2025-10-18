@@ -170,6 +170,8 @@ $$
 <span style="font-size: 14px">图 1：Qwen3 Embedding Model {% cite zhang2025qwen3embeddingadvancingtext --file transformer.bib %}</span>
 </div>
 
+> The Qwen3 embedding and reranking models are built on the dense version of Qwen3 foundation models and are available in three sizes: 0.6B, 4B, and 8B parameters. We initialize these models using the Qwen3 foundation models to leverage their capabilities in text modeling and instruction following.
+
 # **3. Transformer 诞生的历史背景**
 
 > 《Attention Is All You Need》{% cite transformer --file transformer.bib %} 摘要：<br> The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an **attention mechanism**. <br>  <br> 翻译： <br> 主流的序列转换模型基于复杂的递归或卷积神经网络，其中包括一个编码器和一个解码器。性能最好的模型还通过**注意力机制**将编码器和解码器连接起来。
