@@ -549,7 +549,7 @@ MoE 层的工作流程如下：
 
 之前在知乎上看到一个很火的问题，为什么现在 LLM 普遍使用 Decoder-Only 架构？对于同质的结构，模型更容易做得更大更深，而 Encoder 更善于理解，Decoder 更善于生成。早期大语言模型分为 Encoder-Only 架构与 Decoder-Only 架构两个流派，Encoder-Only 架构以 Google 的 Bert 模型为代表，Decoder-Only 架构以 OpenAI 的 GPT 系列模型为代表。当时 Bert 的性能是要优于 GPT 的，后来由于数据与模型规模的增大及涌现能力的出现，GPT 的性能超越了 Bert。Encoder-Only 模型的训练要比 Decoder-Only 模型更复杂，我的理解是，在早期数据与模型规模没有那么大的时候，复杂模型相对于简单模型是有优势的，但随着数据与模型的规模不断增加，这种优势会慢慢减弱。另外 Encoder 的双向注意力机制存在低秩问题 {% cite kexuefm-9529 --file transformer.bib %}，这可能会削弱模型的表达能力，在这一点上 Decoder-Only 模型也更有优势。
 
-TODO：PD 分离
+在 LLM 中，还有一个经常出现的概念，PD 分离，PD 分离是指将推理时的 Prefill 和 Decode 两个阶段放在不同的机器中处理，Prefill 阶段更侧重于并行，Decode 阶段更侧重于串行和内存访问。
 
 # 参考文献
 
