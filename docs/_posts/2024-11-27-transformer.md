@@ -236,7 +236,7 @@ $$
 
 $$
 f(\mathbf{q}) = \sum^n_{i=1} \alpha(\mathbf{q}, \mathbf{k}_i)\mathbf{v}_i,\quad 
-\alpha(\mathbf{q}, \mathbf{k}_i) = \mathrm{softmax}(K(\mathbf{q}, \mathbf{k}_i))
+\alpha(\mathbf{q}, \mathbf{k}_i) = \mathrm{softmax}\left(K(\mathbf{q}, \mathbf{k}_i)\right)
 $$
 
 其中，$\mathbf{q} \in \mathbb{R}^d$ 为查询向量（Query），$\mathbf{k}_i \in \mathbb{R}^d$ 为键向量（Key），$\mathbf{v}_i \in \mathbb{R}^m$ 为值向量（Value），$K(\cdot,\cdot)$ 为注意力评分函数。
@@ -326,15 +326,15 @@ $$
 \mathbf{v}_{i, j} = W^V_j \mathbf{t}_i
 $$
 
-其中，$t_i \in \mathbb{R}^{d_t}$，$W^Q_j \in \mathbb{R}^{d \times d_t}$，$W^K_j \in \mathbb{R}^{d \times d_t}$，$W^V_j \in \mathbb{R}^{d \times d_t}$。
+其中，$t_i \in \mathbb{R}^{d_{\rm model}}$，$W^Q_j \in \mathbb{R}^{d_k \times d_{\rm model}}$，$W^K_j \in \mathbb{R}^{d_k \times d_{\rm model}}$，$W^V_j \in \mathbb{R}^{d_v \times d_{\rm model}}$，在大多数情况下 $d_k = d_v = d_{\rm model}/n_h$，$d_{\rm model}$ 为模型的维度，$n_h$ 为头的总数。
 
 然后，在每个头上计算缩放点积注意力：
 
 $$
-\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j} = \sum^n_{k=1} \frac{\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}}{\sqrt{d}}}{\sum^n_{m=1}\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{m, j}}}{\sqrt{d}}} \cdot \mathbf{v}_{k, j}
+\mathbf{o}_{i, j} = \sum^n_{k=1} {\rm softmax}_k \left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}} \right) \cdot \mathbf{v}_{k, j} = \sum^n_{k=1} \frac{\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}}{\sqrt{d}}}{\sum^n_{m=1}\frac{e^{\mathbf{q}_{i, j}^T \mathbf{k}_{m, j}}}{\sqrt{d}}} \cdot \mathbf{v}_{k, j}
 $$
 
-可以看出，对于第 $j$ 个头，其输出 $\mathbf{o}_{i, j}$ 为 $[\mathbf{v}\_{1,j}, \mathbf{v}\_{2,j},\dots,\mathbf{v}\_{n,j}]$ 的线性组合，可以简写为 $\mathbf{o}\_{i, j} = \sum^n\_{k=1} \alpha\_k \mathbf{v}\_{k,j}$，在机器学习中通常用向量的内积来衡量两个向量的相似度，$\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 的内积越大，或 $\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 越相似，$\mathbf{v}\_{k,j}$ 的权重 $\alpha_k$ 就会越大，$\mathbf{v}\_{k,j}$ 所占的比重就会越大。**简单来讲就是，与当前的词越相近的词，对结果的影响越大。**
+其中，$n$ 为每个 batch 中 token 的数量。可以看出，对于第 $j$ 个头，其输出 $\mathbf{o}_{i, j}$ 为 $[\mathbf{v}\_{1,j}, \mathbf{v}\_{2,j},\dots,\mathbf{v}\_{n,j}]$ 的线性组合，可以简写为 $\mathbf{o}\_{i, j} = \sum^n\_{k=1} \alpha\_k \mathbf{v}\_{k,j}$，在机器学习中通常用向量的内积来衡量两个向量的相似度，$\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 的内积越大，或 $\mathbf{q}\_{i, j}$ 与 $\mathbf{k}\_{k, j}$ 越相似，$\mathbf{v}\_{k,j}$ 的权重 $\alpha_k$ 就会越大，$\mathbf{v}\_{k,j}$ 所占的比重就会越大。**简单来讲就是，与当前的词越相近的词，对结果的影响越大。**
 
 最后，将所有头的输出拼接并通过线性变换：
 
@@ -344,16 +344,16 @@ $$
 
 从图 3 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
 Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），
-Decoder 底部的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 底部的多头注意力机制为交叉注意力机制。
+Decoder 下方的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 上方的多头注意力机制为交叉注意力机制。
 
 这三种多头注意力机制的计算框架和上述是类似的，但有一些细微的差别。
 
 ### **4.1.1 双向注意力机制**
 
-Encoder-Decoder 架构的核心思想是“先理解后生成”。其中 Encoder 的核心任务是实现对输入的深度理解，这一过程通过全序列扫描实现。具体表现为：当处理长度为 $l$ 的输入序列 $X = [\mathbf{t}_1, \mathbf{t}_2, \dots, \mathbf{t}_l]$ 时，每个位置的注意力计算会同时考虑序列中所有 token 的 key-value 对。因此公式(7)中的求和上限应修正为序列长度 $l$：
+Encoder-Decoder 架构的核心思想是“先理解后生成”。其中 Encoder 的核心任务是实现对输入的深度理解，这一过程通过全序列扫描实现。具体表现为：当处理长度为 $l$ 的输入序列 $X = [\mathbf{t}_1, \mathbf{t}_2, \dots, \mathbf{t}_l]$ 时，每个位置的注意力计算会同时考虑序列中所有 token 的 key-value 对。因此公式(11)中的求和上限应修正为序列长度 $l$：
 
 $$
-\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j}
+\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k \left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}} \right) \cdot \mathbf{v}_{k, j}
 $$
 
 这种全局可见的注意力模式使 Encoder 能够建立完整的上下文表征。
@@ -362,37 +362,40 @@ $$
 
 Decoder 负责基于 Encoder 生成的中间表示自回归生成结果，对于自回归过程，当前的输出只取决于之前的结果，与未来的结果无关。
 
-Decoder 采用自回归方式生成输出，其核心约束是：当前时刻的预测只能依赖于已生成的输出（即历史信息）。这种时序依赖性通过注意力掩码（Attention Mask）实现，具体表现为：
-
-**训练阶段**：  
-- 采用**因果掩码（Causal Mask）**，确保第 $i$ 个位置的 query 只能访问前 $i$ 个位置的 key-value 对。  
-- 这种掩码通常通过一个下三角矩阵（元素为 $-\infty$ 或 $0$）实现，使得 Softmax 计算时未来位置的概率接近 $0$。  
-- 公式中的求和上限为当前位置 $i$，但实际实现时通常仍计算所有位置的注意力分数，再通过掩码屏蔽未来信息：  
+**训练阶段**  
+对于训练数据，Decoder 只能看到当前位置以及之前位置的信息，不能看到后续位置的信息，Decoder 采用**因果掩码（Causal Mask）**，确保第 $i$ 个位置的 query 只能访问前 $i$ 个位置的 key-value 信息，因果掩码 $M \in \mathbb{R}^{n \times n}$ 通常为一个下三角矩阵（元素为 $1$ 或 $0$），可以写为如下形式：
 
 $$
-\mathbf{o}_{i, j} = \sum^{l}_{k=1} \text{mask}(k \leq i) \cdot {\rm softmax}_k\left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}\right) \cdot \mathbf{v}_{k, j}
+M_{i,j}= \begin{cases}
+1, & i \geq j \\
+0, & i \lt j
+\end{cases}
 $$
 
-**推理阶段**：  
-- 由于解码是逐步进行的（每次生成一个 token），模型只需计算当前 query 与历史 key-value 对的注意力，无需显式掩码。  
-- 为提升效率，通常会缓存（cache）历史 key-value 对，避免重复计算。 
+因果掩码使得 Softmax 算子在计算当前 query 与未来位置的 key 的内积时会得到 $0$，
 
 $$
-\mathbf{o}_{i, j} = \sum^{\color{red} i}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}) \cdot \mathbf{v}_{k, j}
+\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k\left( M_{i,k} \cdot \frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}}\right) \cdot \mathbf{v}_{k, j}
+$$
+
+**推理阶段**  
+由于解码是逐步进行的，不断基于历史状态生成下一个 token，模型只需计算当前 query 相对于当前及历史 key-value 对的注意力，无需掩码。为提升效率，通常会缓存历史 key-value 对，避免重复计算历史 token 与 $W^K$、$W^V$ 的乘积。 
+
+$$
+\mathbf{o}_{i, j} = \sum^{\color{red} i}_{k=1} {\rm softmax}_k \left(\frac{\mathbf{q}_{i, j}^T \mathbf{k}_{k, j}}{\sqrt{d}} \right) \cdot \mathbf{v}_{k, j}
 $$
 
 ### **4.1.3 交叉注意力机制**
 
-在解码阶段，Decoder 需要将 Encoder 输出的上下文表征（通常记为 $\mathbf{U} = [\mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_l]$）融入生成过程。交叉注意力机制的查询（query）来自 Decoder 的当前状态，而 key-value 对则来自 Encoder 的最终输出：
+在解码阶段，Decoder 需要将 Encoder 输出的上下文表征（通常记为 $\mathbf{U} = [\mathbf{u}_1, \mathbf{u}_2, \dots, \mathbf{u}_n]$）融入生成过程。交叉注意力机制的查询（query）来自 Decoder 的当前状态，而 key-value 对则来自 Encoder 的最终输出：
 
 $$
-\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k(\frac{\mathbf{q}_{i, j}^T {\mathbf{\color{red} u}_{\color{red} k}}}{\sqrt{d}}) \cdot \mathbf{\color{red} u}_{\color{red} k}
+\mathbf{o}_{i, j} = \sum^{\color{red} l}_{k=1} {\rm softmax}_k \left(\frac{\mathbf{q}_{i, j}^T {\mathbf{\color{red} u}_{\color{red} k}}}{\sqrt{d}} \right) \cdot \mathbf{\color{red} u}_{\color{red} k}
 $$
 
-该机制实现了 Encoder-Decoder 之间的信息桥接，是序列到序列建模的关键组件，这种设计使得模型能够：
-- 同时关注不同位置的表示子空间；
-- 学习更丰富的上下文依赖关系；
-- 提高模型的泛化能力。
+该机制实现了 Encoder-Decoder 之间的信息桥接，是序列到序列建模的关键组件，这种设计使得模型能够同时关注不同位置的表示子空间，学习更丰富的上下文依赖关系，提高模型的泛化能力。
+
+在多模态大模型中，通常也是基于交叉注意力机制对齐不同模态间的语义。
 
 ## **4.2 位置编码**
 
