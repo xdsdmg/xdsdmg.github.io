@@ -9,6 +9,13 @@ categories: post
 
 Transformer {% cite transformer --file transformer.bib %} 在 AI 的发展中称得上是一种**划时代**的技术。目前，几乎所有大语言模型 (Large Language Model，LLM) 的模型架构均是在 Transformer 架构的基础上演变而来。另外，现代 AI 推理引擎的核心优化目标，以及专用 AI 加速硬件的设计理念，都会涉及 Transformer 的结构特性。因此，想要走进当下的 AI 领域，Transformer 是绕不开的。
 
+<div align="center">
+<img src="/assets/imgs/transformer/llm_timeline.png" width="100%"/>
+</div>
+<div align="center" style="margin: 10px 0">
+<span style="font-size: 14px">图 1：大模型时间线 {% cite tie2025surveyposttraininglargelanguage --file transformer.bib %}</span>
+</div>
+
 这篇文章希望能为大家展示 Transformer 的前因与后果，不局限于 Transformer 的技术原理，而是展示这一段技术演变的历史过程，**最大的目标是能让大家感受到一些 AI 之美**。
 
 本次分享将按以下脉络展开：
@@ -157,7 +164,7 @@ $$
 <img src="/assets/imgs/transformer/rag-embedding.png" width="100%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 1：Qwen3 Embedding Model {% cite zhang2025qwen3embeddingadvancingtext --file transformer.bib %}</span>
+<span style="font-size: 14px">图 2：Qwen3 Embedding Model {% cite zhang2025qwen3embeddingadvancingtext --file transformer.bib %}</span>
 </div>
 
 > The Qwen3 embedding and reranking models are built on the dense version of Qwen3 foundation models and are available in three sizes: 0.6B, 4B, and 8B parameters. We initialize these models using the Qwen3 foundation models to leverage their capabilities in text modeling and instruction following.
@@ -265,7 +272,7 @@ $$
 <img src="https://zh-v2.d2l.ai/_images/cnn-rnn-self-attention.svg" width="90%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 2：CNN、RNN、自注意力网络结构对比，图源：<a href="https://zh-v2.d2l.ai/chapter_attention-mechanisms/self-attention-and-positional-encoding.html">《动手学深度学习》10.6 小节</a></span>
+<span style="font-size: 14px">图 3：CNN、RNN、自注意力网络结构对比，图源：<a href="https://zh-v2.d2l.ai/chapter_attention-mechanisms/self-attention-and-positional-encoding.html">《动手学深度学习》10.6 小节</a></span>
 </div>
 
 当时主流的序列转换模型是基于 Encoder-Decoder 架构的 RNN 或 CNN。RNN 无法较好地实现并行化；CNN 无法较好地计算输入序列与输出序列的不同位置间的依赖程度，距离越远所需的计算量越大。
@@ -278,13 +285,13 @@ Transformer 主要想达到这两个目标：
 
 Transformer 是一个完全基于注意力机制的 Seq2Seq 模型，其核心创新在于完全摒弃了 RNN 与 CNN，仅依靠自注意力机制和前馈神经网络（Feed Forward Network）构建编码器-解码器结构。这一突破性设计使得 Transformer 能够高效地建模长距离依赖关系，并实现并行化计算。正因如此，其论文的标题才命名为"Attention Is All You Need"。
 
-图 3 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
+图 4 展示了 Transformer 的整体架构，通过前文的铺垫，大家或许已对 Transformer 的架构设计有了一定感触。
 
 <div align="center">
 <img src="/assets/imgs/transformer/arch.png" width="70%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 3：Transformer 模型架构</span>
+<span style="font-size: 14px">图 4：Transformer 模型架构</span>
 </div>
 
 接下来我们按 Transformer 模型的主要模块来介绍，主要有多头注意力机制、位置编码、前馈神经网络与 Add & Norm 这几个核心模块。
@@ -342,7 +349,7 @@ $$
 \mathbf{u}_i = W^O[\mathbf{o}_{i, 1}; \mathbf{o}_{i, 2} ; \dots ; \mathbf{o}_{i, n_h}]
 $$
 
-从图 3 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
+从图 4 可以看出，在 Transformer 中共有 3 个地方用到了多头注意力机制，第 1 个地方在 Encoder 模块，第 2、3 个地方在 Decoder 模块。
 Encoder 中的多头注意力机制为普通的多头注意力机制（也称为双向注意力机制），
 Decoder 下方的多头注意力机制（即 Masked Multi-Head Attention）为单向注意力机制（也称为因果注意力机制），Decoder 上方的多头注意力机制为交叉注意力机制。
 
@@ -508,7 +515,7 @@ Dense 架构的缺点也很明显，扩展昂贵，要想提升模型能力，�
 <img src="/assets/imgs/transformer/MoE.png" width="100%"/>
 </div>
 <div align="center" style="margin: 10px 0">
-<span style="font-size: 14px">图 4：DeepSeekMoE {% cite dai2024deepseekmoeultimateexpertspecialization --file transformer.bib %} MoE 架构</span>
+<span style="font-size: 14px">图 5：DeepSeekMoE {% cite dai2024deepseekmoeultimateexpertspecialization --file transformer.bib %} MoE 架构</span>
 </div>
 
 MoE 架构是为了解决 Dense 模型扩展性瓶颈而诞生的。它的核心思想是 “分而治之”。一个 MoE 层由多个“专家”组成，每个专家本身是一个小型神经网络（例如一个小型 FFN）。同时，有一个关键的“门控网络”或“路由网络”。
