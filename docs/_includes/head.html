@@ -3,11 +3,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {%- seo -%}
-  <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+  <link rel="stylesheet" href='{{ "/assets/css/style.css" | relative_url }}'>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/imgs/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/imgs/favicon-16x16.png">
   <link rel="shortcut icon" href="/assets/imgs/favicon.ico">
 
+  <!-- Latex Support -->
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       jax: ["input/TeX", "output/HTML-CSS"],
@@ -18,10 +19,9 @@
       },
     });
   </script>
-
   <script type="text/javascript" async
     src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>
+  </script>
 
   {%- feed_meta -%}
   {%- if jekyll.environment == 'production' and site.google_analytics -%}
