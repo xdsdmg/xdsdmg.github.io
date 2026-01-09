@@ -28,11 +28,12 @@ github_username: xdsdmg
 github-profile: "https://github.com/xdsdmg"
 
 # Build settings
-theme: minima
+# theme: minima
 plugins:
-  - jekyll-feed
+  - jekyll-feed # minima depends on this plugin
   - jekyll-toc
   - jekyll-scholar
+  - jekyll-seo-tag # minima depends on this plugin
 
 # Exclude from processing.
 # The following items will not be processed, by default.

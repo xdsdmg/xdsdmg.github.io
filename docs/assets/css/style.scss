@@ -3,9 +3,9 @@
 ---
 
 @import
-  "minima/skins/{{ site.minima.skin | default: 'classic' }}",
-  "minima/initialize";
-// @import "highlight.css";
+  "my_minima/skins/{{ site.minima.skin | default: 'classic' }}",
+  "my_minima/initialize";
+@import "highlight.css";
 
 ol.bibliography {
   list-style-type: none;

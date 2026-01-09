@@ -267,35 +267,7 @@
  * Posts
  */
 
-.post {
-  display: grid;
-  grid-template-areas: "table-of-content article remain";
-  grid-template-columns: calc((100% - calc(#{$content-width} - (#{$spacing-unit} * 2)) ) / 2) calc(#{$content-width} - (#{$spacing-unit} * 2)) auto;
-}
 
-.post-body {
-  grid-area: article;
-}
-
-.remain {
-  grid-area: remain;
-}
-
-.post-header {
-  padding-top: $spacing-unit;
-  margin-bottom: $spacing-unit;
-}
-
-.post-title,
-.post-content h1 {
-  @include relative-font-size(2);
-  letter-spacing: -1px;
-  line-height: 1.15;
-
-  @media screen and (min-width: $on-large) {
-    @include relative-font-size(2);
-  }
-}
 
 .post-content {
   margin-bottom: $spacing-unit;
@@ -345,15 +317,9 @@
 }
 
 @media (min-width: 1500px) {
-  #toc-header{
+  #toc-header {
     display: none;
   }
-}
-
-#toc-side {
-  padding: 25px;
-  grid-area: table-of-content;
-  font-size: 1rem;
 }
 
 .table-of-contents ul {

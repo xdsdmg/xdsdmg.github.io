@@ -1,0 +1,34 @@
+.post {
+  display: grid;
+  grid-template-areas: "post-side post-content";
+  grid-template-columns: auto calc(#{$content-width} - (#{$spacing-unit} * 2));
+}
+
+#toc-side {
+  grid-area: post-side;
+  background-color: aqua;
+}
+
+.post-content {
+  grid-area: post-content;
+}
+
+.remain {
+  grid-area: remain;
+}
+
+.post-header {
+  padding-top: $spacing-unit;
+  margin-bottom: $spacing-unit;
+}
+
+.post-title,
+.post-content h1 {
+  @include relative-font-size(2);
+  letter-spacing: -1px;
+  line-height: 1.15;
+
+  @media screen and (min-width: $on-large) {
+    @include relative-font-size(2);
+  }
+}
