@@ -1,7 +1,4 @@
 .post {
-  display: grid;
-  grid-template-areas: "post-side post-content";
-  grid-template-columns: auto calc(#{$content-width} - (#{$spacing-unit} * 2));
 }
 
 #toc-side {
