@@ -2,10 +2,14 @@
 layout: base
 ---
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
-  <div id="toc-side" class="table-of-contents post-side">
+  <img id="toc-toggle" class="toc-ctrl-btn" aria-expanded="true" aria-controls="toc-side" title="hide table of contents"
+    src="/assets/imgs/double-alt-arrow-left.svg" />
+  <div id="toc-side" class="table-of-contents">
     <a href="#{{ page.title | escape }}"><b>{{ "目录" | escape }}</b></a>
     {{ content | toc_only }}
   </div>
+  <img id="toc-reveal" class="toc-ctrl-btn" aria-hidden="true" title="display table of contents"
+    src="/assets/imgs/double-alt-arrow-right.svg" />
   <div class="post-content">
     <div class="post-body">
       <header class="post-header" id="{{ page.title | escape }}">
@@ -53,3 +57,62 @@ layout: base
     {%- include footer.html -%}
   </div>
 </article>
+
+<script>
+  function setAria(expanded) {
+    var btn = document.getElementById('toc-toggle');
+    if (!btn) return;
+    btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    var reveal = document.getElementById('toc-reveal');
+    if (reveal) reveal.setAttribute('aria-hidden', expanded ? 'true' : 'false');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.getElementById('toc-toggle');
+    var reveal = document.getElementById('toc-reveal');
+    var toc = document.getElementById('toc-side');
+    var content = document.querySelector('.post-content');
+    if (!toggle || !toc || !content) return;
+
+    function layoutToc() {
+      var tocRect = toc.getBoundingClientRect();
+      var contentRect = content.getBoundingClientRect();
+      var gap = 16; // space between toc right edge and article left
+      var defaultW = 220;
+      var available = Math.floor(contentRect.left - tocRect.left - gap);
+      if (available >= defaultW) {
+        toc.style.width = defaultW + 'px';
+        toc.classList.remove('toc-truncate');
+      } else if (available > 80) {
+        toc.style.width = available + 'px';
+        toc.classList.add('toc-truncate');
+      } else {
+        // very narrow: keep minimal width and truncate
+        toc.style.width = '80px';
+        toc.classList.add('toc-truncate');
+      }
+    }
+
+    // initial layout and on resize/scroll
+    layoutToc();
+    window.addEventListener('resize', layoutToc);
+    window.addEventListener('scroll', layoutToc);
+
+    toggle.addEventListener('click', function (e) {
+      document.body.classList.toggle('toc-collapsed');
+      var expanded = !document.body.classList.contains('toc-collapsed');
+      setAria(expanded);
+      // recalc to update reveal position when collapsed/expanded
+      setTimeout(layoutToc, 60);
+    });
+
+    if (reveal) {
+      reveal.addEventListener('click', function (e) {
+        document.body.classList.remove('toc-collapsed');
+        setAria(true);
+        setTimeout(layoutToc, 60);
+      });
+    }
+  });
+
+</script>

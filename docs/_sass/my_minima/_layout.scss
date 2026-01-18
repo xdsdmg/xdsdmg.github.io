@@ -310,43 +310,17 @@
   }
 }
 
-@media (max-width: 1500px) {
-  #toc-side {
-    display: none;
-  }
-}
+// @media (max-width: 1500px) {
+//   #toc-side {
+//     display: none;
+//   }
+// }
 
-@media (min-width: 1500px) {
-  #toc-header {
-    display: none;
-  }
-}
-
-.table-of-contents ul {
-  margin-left: 0;
-}
-
-.table-of-contents ul ul {
-  margin-left: 8px;
-}
-
-.table-of-contents ul ul ul {
-  margin-left: 16px;
-}
-
-.table-of-contents ul li {
-  list-style-position: inside;
-}
-
-// Set the length between marker and content
-.table-of-contents ul li:before {
-  content: "";
-  margin-left: -0.5rem;
-}
-
-.table-of-contents a {
-  color: #111111;
-}
+// @media (min-width: 1500px) {
+//   #toc-header {
+//     display: none;
+//   }
+// }
 
 .social-media-list {
   display: table;

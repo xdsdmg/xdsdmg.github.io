@@ -1,13 +1,61 @@
 .post {
-}
-
-#toc-side {
-  grid-area: post-side;
+  // position: relative;
   background-color: aqua;
 }
 
+/* Sidebar (desktop) */
+#toc-side {
+  // grid-area: post-side;
+  // background-color: transparent;
+  background-color: yellow;
+  transition: transform .25s ease, opacity .2s ease;
+  z-index: 30;
+}
+
+/* Center the article content and limit width */
 .post-content {
-  grid-area: post-content;
+  // grid-area: post-content;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+// .table-of-contents ul {
+//   margin-left: 0;
+// }
+
+// .table-of-contents ul ul {
+//   margin-left: 8px;
+// }
+
+// .table-of-contents ul ul ul {
+//   margin-left: 16px;
+// }
+
+// .table-of-contents ul li {
+//   list-style-position: inside;
+// }
+
+// // Set the length between marker and content
+// .table-of-contents ul li:before {
+//   content: "";
+//   margin-left: -0.5rem;
+// }
+
+// .table-of-contents a {
+//   color: #111111;
+// }
+
+/* Preserve list markers and spacing for TOC */
+.table-of-contents ul,
+.table-of-contents ol {
+  margin: 0 0 0 0;
+  padding-left: 1.2rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .remain {
@@ -28,4 +76,109 @@
   @media screen and (min-width: $on-large) {
     @include relative-font-size(2);
   }
+}
+
+/* Toggle buttons */
+.toc-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: inherit;
+  background: inherit;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+
+  position: absolute;
+  top: 2.5rem;
+  left: 0.5rem;
+}
+
+/* Place toggle at top-left inside the TOC container */
+#toc-toggle {
+  z-index: 35;
+}
+
+/* Reveal button will sit visually aligned with TOC top-left when shown */
+#toc-reveal {
+  display: none;
+  z-index: 40;
+}
+
+/* Desktop layout: fixed sidebar */
+@media screen and (min-width: 900px) {
+  $toc-side-top: 7rem;
+
+  #toc-side {
+    position: fixed;
+    left: 0;
+    top: $toc-side-top;
+    width: 220px;
+    /* leave space for the toggle icon inside the container */
+    padding: 0.5rem;
+    max-height: calc(100vh - $toc-side-top);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* When collapsed, slide sidebar out and show reveal button */
+  body.toc-collapsed #toc-side {
+    transform: translateX(-260px);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  body.toc-collapsed #toc-toggle {
+    display: none;
+  }
+
+  body.toc-collapsed #toc-reveal {
+    display: inline-flex;
+  }
+
+  /* Keep article content centered on large screens */
+  .post-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* Mobile: hide fixed sidebar, use inline header TOC if available */
+@media screen and (max-width: 899px) {
+  #toc-side {
+    display: none;
+  }
+
+  .toc-reveal {
+    display: none;
+  }
+}
+
+/* small icon styling */
+.toc-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+#toc-side li {
+  list-style-position: outside;
+}
+
+/* Default: allow wrapping so markers and multi-line titles display normally */
+#toc-side a {
+  display: block;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-right: 0.5rem;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* When container has limited width, enable single-line truncation */
+#toc-side.toc-truncate a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
