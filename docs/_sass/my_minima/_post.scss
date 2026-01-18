@@ -10,6 +10,22 @@
   background-color: yellow;
   transition: transform .25s ease, opacity .2s ease;
   z-index: 30;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  // /* Track */
+  &::-webkit-scrollbar-track {
+    background-color: inherit;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    background: #C9CDD4;
+  }
 }
 
 /* Center the article content and limit width */
@@ -86,8 +102,8 @@
   border: none;
   color: inherit;
   background: inherit;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 
   position: absolute;
@@ -108,19 +124,23 @@
 
 /* Desktop layout: fixed sidebar */
 @media screen and (min-width: 900px) {
-  $toc-side-top: 7rem;
+  $toc-side-top: 7.2rem;
 
   #toc-side {
     position: fixed;
     left: 0;
     top: $toc-side-top;
-    width: 220px;
+    width: 300px;
     /* leave space for the toggle icon inside the container */
     padding: 0.5rem;
     max-height: calc(100vh - $toc-side-top);
     overflow-y: auto;
     overflow-x: hidden;
+
+
   }
+
+
 
   /* When collapsed, slide sidebar out and show reveal button */
   body.toc-collapsed #toc-side {

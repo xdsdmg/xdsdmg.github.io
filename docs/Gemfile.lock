@@ -36,10 +36,10 @@ GEM
     ffi (1.17.3-x86_64-linux-gnu)
     forwardable (1.4.0)
     forwardable-extended (2.6.0)
-    google-protobuf (4.33.3-arm64-darwin)
+    google-protobuf (4.33.4-arm64-darwin)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.33.3-x86_64-linux-gnu)
+    google-protobuf (4.33.4-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
     http_parser.rb (0.8.1)
@@ -87,7 +87,8 @@ GEM
       kramdown (~> 2.0)
     latex-decode (0.4.2)
     liquid (4.0.4)
-    listen (3.9.0)
+    listen (3.10.0)
+      logger
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
@@ -145,4 +146,4 @@ DEPENDENCIES
   webrick (~> 1.8)
 
 BUNDLED WITH
-  4.0.3
+   2.6.6

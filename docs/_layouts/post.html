@@ -3,13 +3,13 @@ layout: base
 ---
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
   <img id="toc-toggle" class="toc-ctrl-btn" aria-expanded="true" aria-controls="toc-side" title="hide table of contents"
-    src="/assets/imgs/double-alt-arrow-left.svg" />
+    src="/assets/imgs/toc-hide.svg" />
   <div id="toc-side" class="table-of-contents">
     <a href="#{{ page.title | escape }}"><b>{{ "目录" | escape }}</b></a>
     {{ content | toc_only }}
   </div>
   <img id="toc-reveal" class="toc-ctrl-btn" aria-hidden="true" title="display table of contents"
-    src="/assets/imgs/double-alt-arrow-right.svg" />
+    src="/assets/imgs/toc-display.svg" />
   <div class="post-content">
     <div class="post-body">
       <header class="post-header" id="{{ page.title | escape }}">
@@ -78,7 +78,7 @@ layout: base
       var tocRect = toc.getBoundingClientRect();
       var contentRect = content.getBoundingClientRect();
       var gap = 16; // space between toc right edge and article left
-      var defaultW = 220;
+      var defaultW = 300;
       var available = Math.floor(contentRect.left - tocRect.left - gap);
       if (available >= defaultW) {
         toc.style.width = defaultW + 'px';
