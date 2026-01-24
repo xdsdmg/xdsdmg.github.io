@@ -78,18 +78,34 @@ layout: base
       var tocRect = toc.getBoundingClientRect();
       var contentRect = content.getBoundingClientRect();
       var gap = 16; // space between toc right edge and article left
-      var defaultW = 300;
-      var available = Math.floor(contentRect.left - tocRect.left - gap);
-      if (available >= defaultW) {
-        toc.style.width = defaultW + 'px';
-        toc.classList.remove('toc-truncate');
-      } else if (available > 80) {
-        toc.style.width = available + 'px';
-        toc.classList.add('toc-truncate');
+      // var defaultW = 350;
+      var maxWidth = Math.floor(contentRect.left - tocRect.left - gap);
+
+
+
+      // toc.style.maxWidth = available + 'px';
+
+      var contentWidth = toc.scrollWidth;
+
+      console.log(`maxWith: ${maxWidth}, contentWidth: ${contentWidth}, width: ${toc.style.width}`);
+
+      // if (available >= defaultW) {
+      //   toc.style.width = defaultW + 'px';
+      //   toc.classList.remove('toc-truncate');
+      // } else if (available > 80) {
+      //   toc.style.width = available + 'px';
+      //   toc.classList.add('toc-truncate');
+      // } else {
+      //   // very narrow: keep minimal width and truncate
+      //   toc.style.width = '80px';
+      //   toc.classList.add('toc-truncate');
+      // }
+
+
+      if (contentWidth < maxWidth) {
+        toc.style.width = 'fit-content';
       } else {
-        // very narrow: keep minimal width and truncate
-        toc.style.width = '80px';
-        toc.classList.add('toc-truncate');
+        toc.style.width = maxWidth + 'px';
       }
     }
 

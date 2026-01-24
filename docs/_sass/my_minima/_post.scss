@@ -1,13 +1,15 @@
+$toc-side-left: 30px;
+
 .post {
   // position: relative;
-  background-color: aqua;
+  // background-color: aqua;
 }
 
 /* Sidebar (desktop) */
 #toc-side {
+  background-color: yellow;
   // grid-area: post-side;
   // background-color: transparent;
-  background-color: yellow;
   transition: transform .25s ease, opacity .2s ease;
   z-index: 30;
 
@@ -15,16 +17,19 @@
     width: 8px;
   }
 
-  // /* Track */
-  &::-webkit-scrollbar-track {
-    background-color: inherit;
-  }
+  &:hover {
 
-  /* Handle */
-  &::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-    background: #C9CDD4;
+    // 滚动条所在的轨道的样式
+    &::-webkit-scrollbar-track {
+      background-color: inherit;
+    }
+
+    // 滚动条样式
+    &::-webkit-scrollbar-thumb {
+      -webkit-border-radius: 3px;
+      border-radius: 4px;
+      background: #C9CDD4;
+    }
   }
 }
 
@@ -108,7 +113,7 @@
 
   position: absolute;
   top: 2.5rem;
-  left: 0.5rem;
+  left: $toc-side-left;
 }
 
 /* Place toggle at top-left inside the TOC container */
@@ -130,14 +135,12 @@
     position: fixed;
     left: 0;
     top: $toc-side-top;
-    width: 300px;
+    width: fit-content;
     /* leave space for the toggle icon inside the container */
-    padding: 0.5rem;
+    padding: 5px 5px 5px $toc-side-left;
     max-height: calc(100vh - $toc-side-top);
     overflow-y: auto;
     overflow-x: hidden;
-
-
   }
 
 
@@ -191,14 +194,21 @@
   box-sizing: border-box;
   max-width: 100%;
   padding-right: 0.5rem;
-  overflow: visible;
-  text-overflow: clip;
-  white-space: normal;
-}
 
-/* When container has limited width, enable single-line truncation */
-#toc-side.toc-truncate a {
+  
+
+  // overflow: visible;
+  // text-overflow: clip;
+  // white-space: normal;
+
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* When container has limited width, enable single-line truncation */
+// #toc-side.toc-truncate a {
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+// }
