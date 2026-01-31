@@ -43,6 +43,12 @@
     }
 }
 
+@media screen and (max-width: $on-palm) {
+    .site-title {
+        @include relative-font-size(1);
+    }
+}
+
 .header-icon-container {
     grid-area: icon;
     height: 100%;

@@ -11,6 +11,14 @@ body {
   padding: 0;
 }
 
+@media screen and (max-width: $on-palm) {
+
+  html,
+  body {
+    font-size: $small-font-size;
+  }
+}
+
 /**
  * Reset some basic elements
  */
