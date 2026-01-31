@@ -1,0 +1,72 @@
+/**
+ * Site header
+ */
+.site-header {
+    height: $spacing-unit * 1.5;
+    line-height: $spacing-unit * 1.5;
+    width: 100%;
+    background-color: #1F3340;
+}
+
+.site-nav {
+    position: absolute;
+    top: 9px;
+    right: $spacing-unit * .5;
+    background-color: $background-color;
+    border-radius: 5px;
+    text-align: right;
+    display: flex;
+}
+
+.header-body {
+    display: grid;
+    grid-template-columns: 200px auto 200px;
+    grid-template-areas: "site-title none link";
+}
+
+.site-title {
+    grid-area: site-title;
+    @include relative-font-size(1.125);
+    letter-spacing: -1px;
+    margin-bottom: 0;
+    float: left;
+
+    @include media-query($on-palm) {
+        padding-right: 45px;
+    }
+
+    color: #F3EED4;
+
+    &:hover {
+        text-decoration: none;
+        color: #F3EED4;
+    }
+}
+
+.header-icon-container {
+    grid-area: icon;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.header-icon-link {
+    display: flex;
+    align-items: center;
+}
+
+.page-link-list {
+    grid-area: link;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.page-link-list a {
+    margin-left: 15px;
+    color: #F3EED4;
+
+    &:hover {
+        text-decoration: none;
+    }
+}

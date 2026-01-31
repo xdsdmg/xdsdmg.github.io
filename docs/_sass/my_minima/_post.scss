@@ -1,15 +1,52 @@
 $toc-side-left: 30px;
 
 .post {
-  // position: relative;
-  // background-color: aqua;
+  width: 100%;
+}
+
+.post-content {
+  margin-bottom: $spacing-unit;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: $spacing-unit
+  }
+
+  h2 {
+    @include relative-font-size(1.75);
+
+    @media screen and (min-width: $on-large) {
+      @include relative-font-size(1.75);
+    }
+  }
+
+  h3 {
+    @include relative-font-size(1.375);
+
+    @media screen and (min-width: $on-large) {
+      @include relative-font-size(1.375);
+    }
+  }
+
+  h4 {
+    @include relative-font-size(1.25);
+  }
+
+  h5 {
+    @include relative-font-size(1.125);
+  }
+
+  h6 {
+    @include relative-font-size(1.0625);
+  }
 }
 
 /* Sidebar (desktop) */
 #toc-side {
-  background-color: yellow;
-  // grid-area: post-side;
-  // background-color: transparent;
   transition: transform .25s ease, opacity .2s ease;
   z-index: 30;
 
@@ -18,6 +55,7 @@ $toc-side-left: 30px;
   }
 
   &:hover {
+    background-color: inherit;
 
     // 滚动条所在的轨道的样式
     &::-webkit-scrollbar-track {
@@ -33,39 +71,35 @@ $toc-side-left: 30px;
   }
 }
 
-/* Center the article content and limit width */
-.post-content {
-  // grid-area: post-content;
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 1rem;
+@media screen and (max-width:759px) {
+  .post-content {
+    // width: 100%;
+    max-width: calc(100vw - 3rem);
+    margin: 0 auto;
+  }
+
+  table-of-contents ul,
+  .table-of-contents ol,
+  #toc-side a {
+    white-space: normal;
+    overflow: visible;
+    word-break: break-word;
+  }
 }
 
-// .table-of-contents ul {
-//   margin-left: 0;
-// }
+@media screen and (min-width: 760px) {
 
-// .table-of-contents ul ul {
-//   margin-left: 8px;
-// }
+  /* Center the article content and limit width */
+  .post-content {
+    width: 760px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+}
 
-// .table-of-contents ul ul ul {
-//   margin-left: 16px;
-// }
-
-// .table-of-contents ul li {
-//   list-style-position: inside;
-// }
-
-// // Set the length between marker and content
-// .table-of-contents ul li:before {
-//   content: "";
-//   margin-left: -0.5rem;
-// }
-
-// .table-of-contents a {
-//   color: #111111;
-// }
+.table-of-contents a {
+  color: #111111;
+}
 
 /* Preserve list markers and spacing for TOC */
 .table-of-contents ul,
@@ -111,8 +145,8 @@ $toc-side-left: 30px;
   height: 24px;
   cursor: pointer;
 
-  position: absolute;
-  top: 2.5rem;
+  position: fixed;
+  top: 5.3rem;
   left: $toc-side-left;
 }
 
@@ -128,22 +162,20 @@ $toc-side-left: 30px;
 }
 
 /* Desktop layout: fixed sidebar */
-@media screen and (min-width: 900px) {
+@media screen and (min-width: 1350px) {
   $toc-side-top: 7.2rem;
 
   #toc-side {
     position: fixed;
     left: 0;
     top: $toc-side-top;
-    width: fit-content;
+    max-width: 100%;
     /* leave space for the toggle icon inside the container */
     padding: 5px 5px 5px $toc-side-left;
     max-height: calc(100vh - $toc-side-top);
     overflow-y: auto;
     overflow-x: hidden;
   }
-
-
 
   /* When collapsed, slide sidebar out and show reveal button */
   body.toc-collapsed #toc-side {
@@ -165,15 +197,23 @@ $toc-side-left: 30px;
     padding-left: 0;
     padding-right: 0;
   }
+
+  #toc-header {
+    display: none;
+  }
 }
 
 /* Mobile: hide fixed sidebar, use inline header TOC if available */
-@media screen and (max-width: 899px) {
+@media screen and (max-width: 1349px) {
   #toc-side {
     display: none;
   }
 
-  .toc-reveal {
+  #toc-reveal {
+    display: none;
+  }
+
+  #toc-toggle {
     display: none;
   }
 }
@@ -195,20 +235,7 @@ $toc-side-left: 30px;
   max-width: 100%;
   padding-right: 0.5rem;
 
-  
-
-  // overflow: visible;
-  // text-overflow: clip;
-  // white-space: normal;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* When container has limited width, enable single-line truncation */
-// #toc-side.toc-truncate a {
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-//   white-space: nowrap;
-// }

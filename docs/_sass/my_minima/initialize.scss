@@ -46,5 +46,8 @@ $on-large: $on-laptop !default;
 "my_minima/base", // Defines element resets.
 "my_minima/layout", // Defines structure and style based on CSS selectors.
 "my_minima/custom-styles", // Hook to override existing styles.
-"my_minima/post"
+"my_minima/post",
+"my_minima/header",
+"my_minima/footer",
+"my_minima/home"
 ;
