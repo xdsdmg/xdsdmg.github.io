@@ -33,6 +33,14 @@
     }
 }
 
+@media screen and (max-width: $on-palm) {
+
+    .post-link,
+    .post-meta {
+        font-size: $small-font-size;
+    }
+}
+
 .pagination {
     margin-bottom: $spacing-unit;
 
@@ -62,11 +70,32 @@
     width: 100%;
     display: grid;
     grid-template-rows: auto 30px;
-    grid-template-columns: auto 150px;
+    grid-template-columns: auto 120px;
     grid-template-areas:
         "intro avatar"
         "link avatar";
     gap: 10px;
+}
+
+@media screen and (max-width: $on-palm) {
+    #about {
+        display: grid;
+        grid-template-rows: auto 30px;
+        grid-template-areas:
+            "intro avatar"
+            "link avatar";
+        gap: 5px;
+        font-size: $small-font-size;
+    }
+
+    #about p {
+        margin: 0 0 5px;
+    }
+
+    #avatar {
+        max-width: 100%;
+        height: 100%;
+    }
 }
 
 #intro {
@@ -81,4 +110,39 @@
 
 #avatar {
     grid-area: avatar;
+}
+
+.about-icon {
+    margin-right: 10px;
+    color: black;
+
+    &:hover {
+        color: #551A8B;
+    }
+}
+
+.about-icon>svg {
+    fill: currentColor;
+}
+
+.icon-normal {
+    width: 25px;
+    height: 25px;
+}
+
+.icon-small {
+    width: 21px;
+    height: 21px;
+}
+
+@media screen and (max-width: $on-palm) {
+    .icon-normal {
+        width: 20px;
+        height: 20px;
+    }
+
+    .icon-small {
+        width: 17px;
+        height: 17px;
+    }
 }

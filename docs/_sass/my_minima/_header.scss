@@ -1,11 +1,15 @@
-/**
- * Site header
- */
 .site-header {
     height: $spacing-unit * 1.5;
     line-height: $spacing-unit * 1.5;
     width: 100%;
     background-color: #1F3340;
+}
+
+@media screen and (max-width: $on-palm) {
+    .site-header {
+        height: $spacing-unit * 1.2;
+        line-height: $spacing-unit * 1.2;
+    }
 }
 
 .site-nav {
@@ -20,7 +24,7 @@
 
 .header-body {
     display: grid;
-    grid-template-columns: 200px auto 200px;
+    grid-template-columns: 130px auto 130px;
     grid-template-areas: "site-title none link";
 }
 
@@ -44,8 +48,10 @@
 }
 
 @media screen and (max-width: $on-palm) {
+
+    .site-header,
     .site-title {
-        @include relative-font-size(1);
+        @include relative-font-size(0.9);
     }
 }
 

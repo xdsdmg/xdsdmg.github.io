@@ -13,7 +13,12 @@ $toc-side-left: 30px;
   h4,
   h5,
   h6 {
-    margin-top: $spacing-unit
+    margin-top: $spacing-unit;
+
+
+    @media screen and (max-width: $on-palm) {
+      margin-top: 0.75 * $spacing-unit;
+    }
   }
 
   h2 {
@@ -21,6 +26,10 @@ $toc-side-left: 30px;
 
     @media screen and (min-width: $on-large) {
       @include relative-font-size(1.75);
+    }
+
+    @media screen and (max-width: $on-palm) {
+      @include relative-font-size(1.3);
     }
   }
 
@@ -30,18 +39,34 @@ $toc-side-left: 30px;
     @media screen and (min-width: $on-large) {
       @include relative-font-size(1.375);
     }
+
+    @media screen and (max-width: $on-palm) {
+      @include relative-font-size(1.2);
+    }
   }
 
   h4 {
     @include relative-font-size(1.25);
+
+    @media screen and (max-width: $on-palm) {
+      @include relative-font-size(1.1);
+    }
   }
 
   h5 {
     @include relative-font-size(1.125);
+
+    @media screen and (max-width: $on-palm) {
+      @include relative-font-size(1.05);
+    }
   }
 
   h6 {
     @include relative-font-size(1.0625);
+
+    @media screen and (max-width: $on-palm) {
+      @include relative-font-size(1);
+    }
   }
 }
 
@@ -120,6 +145,11 @@ $toc-side-left: 30px;
 .post-header {
   padding-top: $spacing-unit;
   margin-bottom: $spacing-unit;
+  
+  @media screen and (max-width: $on-palm) {
+    padding-top: 0.3 * $spacing-unit;
+    margin-bottom: 0.3 * $spacing-unit;
+  }
 }
 
 .post-title,
@@ -130,6 +160,10 @@ $toc-side-left: 30px;
 
   @media screen and (min-width: $on-large) {
     @include relative-font-size(2);
+  }
+
+  @media screen and (max-width: $on-palm) {
+    @include relative-font-size(1.5);
   }
 }
 
@@ -228,14 +262,39 @@ $toc-side-left: 30px;
   list-style-position: outside;
 }
 
-/* Default: allow wrapping so markers and multi-line titles display normally */
-#toc-side a {
+@mixin toc-overflow {
   display: block;
   box-sizing: border-box;
-  max-width: 100%;
-  padding-right: 0.5rem;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// TODO: 刷新时会先展示完整行，再显示为缩略形式。
+#toc-side a {
+  max-width: 100%;
+  padding-right: 0.5rem;
+  
+  @include toc-overflow;
+}
+
+@media screen and (max-width: $on-palm) {
+  #toc-header {
+    font-size: $small-font-size;
+  }
+}
+
+#toc-header a {
+  max-width: 100%;
+  @include toc-overflow;
+}
+
+#toc-header h1 {
+  font-size: 5px;
+}
+
+@media screen and (max-width: $on-palm) {
+  .article-body {
+    font-size: $small-font-size;
+  }
 }
