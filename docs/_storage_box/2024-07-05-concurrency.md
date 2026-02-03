@@ -280,7 +280,6 @@ int main(int argc, char *argv[]) {
   printf("main: end (counter = %d)\n", counter);
 
   return 0;
-
 }
 ```
 
