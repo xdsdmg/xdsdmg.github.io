@@ -108,3 +108,28 @@ layout: base
     }
   });
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('pre').forEach(function(pre) {
+      pre.classList.add('has-copy-btn');
+      var button = document.createElement('button');
+      button.textContent = 'Copy';
+      button.className = 'copy-btn';
+      button.title = 'Copy code to clipboard';
+      button.onclick = function() {
+        var code = pre.querySelector('code');
+        var text = code ? code.textContent : pre.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+          button.textContent = 'Copied!';
+          setTimeout(function() {
+            button.textContent = 'Copy';
+          }, 2000);
+        }).catch(function(err) {
+          console.error('Failed to copy: ', err);
+        });
+      };
+      pre.appendChild(button);
+    });
+  });
+</script>
