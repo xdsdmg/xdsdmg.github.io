@@ -141,16 +141,62 @@ layout: base
       
       // Add copy button
       var button = document.createElement('button');
-      button.textContent = '复制';
       button.className = 'copy-btn';
       button.title = 'Copy code to clipboard';
+      
+      // Create and append icon
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', '16');
+      svg.setAttribute('height', '16');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      svg.setAttribute('class', 'copy-icon');
+      
+      var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('width', '14');
+      rect.setAttribute('height', '14');
+      rect.setAttribute('x', '8');
+      rect.setAttribute('y', '8');
+      rect.setAttribute('rx', '2');
+      rect.setAttribute('ry', '2');
+      svg.appendChild(rect);
+      
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2');
+      svg.appendChild(path);
+      
+      button.appendChild(svg);
+      
+      // Create and append text
+      var textSpan = document.createElement('span');
+      textSpan.textContent = '复制';
+      button.appendChild(textSpan);
+      
       button.onclick = function() {
         var code = pre.querySelector('code');
         var text = code ? code.textContent : pre.textContent;
         navigator.clipboard.writeText(text).then(function() {
-          button.textContent = '已复制';
+          // Show success notification
+          var notification = document.createElement('div');
+          notification.className = 'copy-notification';
+          notification.textContent = '复制成功';
+          document.body.appendChild(notification);
+          
+          // Trigger animation
           setTimeout(function() {
-            button.textContent = '复制';
+            notification.classList.add('show');
+          }, 10);
+          
+          // Remove notification after 2 seconds
+          setTimeout(function() {
+            notification.classList.remove('show');
+            setTimeout(function() {
+              document.body.removeChild(notification);
+            }, 300);
           }, 2000);
         }).catch(function(err) {
           console.error('Failed to copy: ', err);
