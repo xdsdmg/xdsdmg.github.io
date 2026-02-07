@@ -36,10 +36,10 @@ GEM
     ffi (1.17.3-x86_64-linux-gnu)
     forwardable (1.4.0)
     forwardable-extended (2.6.0)
-    google-protobuf (4.33.4-arm64-darwin)
+    google-protobuf (4.33.5-arm64-darwin)
       bigdecimal
       rake (>= 13)
-    google-protobuf (4.33.4-x86_64-linux-gnu)
+    google-protobuf (4.33.5-x86_64-linux-gnu)
       bigdecimal
       rake (>= 13)
     http_parser.rb (0.8.1)
@@ -80,7 +80,7 @@ GEM
       nokogiri (~> 1.12)
     jekyll-watch (2.2.1)
       listen (~> 3.0)
-    json (2.18.0)
+    json (2.18.1)
     kramdown (2.5.2)
       rexml (>= 3.4.4)
     kramdown-parser-gfm (1.1.0)
@@ -134,6 +134,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bundler (~> 4.0.3)
   http_parser.rb (~> 0.6.0)
   jekyll (~> 4.0)
   jekyll-feed (~> 0.12)
