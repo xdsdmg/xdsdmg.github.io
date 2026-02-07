@@ -113,17 +113,44 @@ layout: base
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('pre').forEach(function(pre) {
       pre.classList.add('has-copy-btn');
+      
+      // Add line numbers
+      var code = pre.querySelector('code');
+      if (code) {
+        var lines = code.textContent.split('\n');
+        var lineNumbers = document.createElement('div');
+        lineNumbers.className = 'line-numbers';
+        
+        // Count actual lines (excluding trailing empty line)
+        var lineCount = lines.length;
+        if (lines[lines.length - 1] === '') {
+          lineCount--;
+        }
+        
+        for (var i = 1; i <= lineCount; i++) {
+          var lineNum = document.createElement('span');
+          lineNum.className = 'line-number';
+          lineNum.textContent = i;
+          lineNumbers.appendChild(lineNum);
+        }
+        
+        // Insert line numbers before the code content
+        pre.insertBefore(lineNumbers, code);
+        code.classList.add('has-line-numbers');
+      }
+      
+      // Add copy button
       var button = document.createElement('button');
-      button.textContent = 'Copy';
+      button.textContent = '复制';
       button.className = 'copy-btn';
       button.title = 'Copy code to clipboard';
       button.onclick = function() {
         var code = pre.querySelector('code');
         var text = code ? code.textContent : pre.textContent;
         navigator.clipboard.writeText(text).then(function() {
-          button.textContent = 'Copied!';
+          button.textContent = '已复制';
           setTimeout(function() {
-            button.textContent = 'Copy';
+            button.textContent = '复制';
           }, 2000);
         }).catch(function(err) {
           console.error('Failed to copy: ', err);

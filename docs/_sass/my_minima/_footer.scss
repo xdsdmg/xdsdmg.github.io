@@ -1,18 +1,11 @@
-.site-footer {
+.footer {
   grid-area: footer;
-  padding: $spacing-unit 0;
-}
-
-.footer-heading {
-  @include relative-font-size(1.125);
-  margin-bottom: $spacing-unit * .5;
 }
 
 .footer-content {
-  margin-top: $spacing-unit;
+  padding: $spacing-unit 0 $spacing-unit 0;
   font-size: 13px;
 }
-
 
 @media screen and (max-width: $on-palm) {
   .footer-content {

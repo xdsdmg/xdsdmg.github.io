@@ -21,9 +21,13 @@
     "page-content"
     "footer";
   grid-template-rows: auto calc(#{$spacing-unit} * 5);
-  height: calc(100% - (#{$spacing-unit} * 1));
+  height: calc(100% - (#{$spacing-unit} * 1.5));
   overflow-y: auto;
   scroll-behavior: auto;
+
+  @media screen and (max-width: $on-palm) {
+    height: calc(100% - (#{$spacing-unit} * 1.2));
+  }
 }
 
 /**
