@@ -208,6 +208,20 @@ pre {
     border: 0;
     padding-right: 0;
     padding-left: 0;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: inherit;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      -webkit-border-radius: 3px;
+      border-radius: 4px;
+      background: #C9CDD4;
+    }
   }
 }
 
