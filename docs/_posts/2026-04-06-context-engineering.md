@@ -16,7 +16,7 @@ categories: post
 
 - 最简单的 AI Agent 是怎样的？[Agent Loop](https://github.com/xdsdmg/miniclaw/blob/main/src/agent.ts)
 - Manus。[AI代理的上下文工程：构建Manus的经验教训](https://manus.im/zh-cn/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)（[附件](/assets/html/AI代理的上下文工程：构建Manus的经验教训)）
-- 关于 Claude Code。[Claude Code Unpacked](https://ccunpacked.dev/#agent-loop)，[搞懂缓存机制，从Gemma4到Claude Code省80%Token](https://x.com/MinLiBuilds/status/2041178722230030384?s=20)（[附件](/assets/html/搞懂缓存机制，从Gemma4到Claude Code省80％Token)）
+- 关于 Claude Code。[Claude Code Unpacked](https://ccunpacked.dev/#agent-loop)，[搞懂缓存机制，从Gemma4到Claude Code省80%Token](https://x.com/MinLiBuilds/status/2041178722230030384?s=20)（[附件](/assets/html/搞懂缓存机制，从Gemma4到Claude Code省80％Token)），[Harness Engineering](https://harness-books.agentway.dev/book1-claude-code/)
 - 渐进式披露，给 AI 的工具是越多越好嘛？
 - AI Native。[创造一只龙虾，需要些什么?](https://frostming.com/posts/2026/create-a-claw/)
 
