@@ -5,7 +5,6 @@
 @import
   "my_minima/skins/{{ site.minima.skin | default: 'classic' }}",
   "my_minima/initialize";
-@import "highlight.css";
 
 ol.bibliography {
   list-style-type: none;
