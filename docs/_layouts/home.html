@@ -3,6 +3,9 @@ layout: base
 ---
 
 <div class="home wrapper">
+  <div id="hero-3d" aria-label="3D 动画：Q 版小人在电脑前敲代码">
+    <img class="hero-3d-fallback" src="{{ '/assets/imgs/avatar.jpg' | relative_url }}" alt="">
+  </div>
   {% if site.paginate %}
   {% assign posts = paginator.posts %}
   {% else %}
@@ -111,3 +114,389 @@ layout: base
   {%- endif %}
   {%- endif -%}
 </div>
+
+<script type="module">
+  import * as THREE from "{{ '/assets/js/three.module.min.js' | relative_url }}";
+  import { GLTFLoader } from "{{ '/assets/js/GLTFLoader.js' | relative_url }}";
+
+  (function () {
+    'use strict';
+    var mount = document.getElementById('hero-3d');
+    if (!mount) return;
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (err) {
+      console.error('[hero-3d] WebGL init failed:', err);
+      return; // 保留默认占位图
+    }
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    mount.appendChild(renderer.domElement);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 60);
+    var baseCamY = 2.1;
+    var lookY = 1.05;
+    camera.position.set(1.6, baseCamY, 6.0);
+    camera.lookAt(0, lookY, 0);
+
+    // 灯光
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xe6d9b8, 1.15));
+    var key = new THREE.DirectionalLight(0xffffff, 1.5);
+    key.position.set(3, 6, 5);
+    scene.add(key);
+    var rim = new THREE.DirectionalLight(0xfff3d6, 0.8);
+    rim.position.set(-3, 3, -4);
+    scene.add(rim);
+
+    var root = new THREE.Group();
+    scene.add(root);
+
+    function mat(color, rough) {
+      return new THREE.MeshStandardMaterial({ color: color, roughness: rough === undefined ? 0.75 : rough, metalness: 0.0 });
+    }
+    function box(w, h, d, color, x, y, z, ry) {
+      var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat(color));
+      m.position.set(x, y, z);
+      m.rotation.y = ry || 0;
+      return m;
+    }
+    function sphere(r, color, x, y, z) {
+      var m = new THREE.Mesh(new THREE.SphereGeometry(r, 36, 24), mat(color, 0.6));
+      m.position.set(x, y, z);
+      return m;
+    }
+    function capsule(r, len, color, x, y, z, rz) {
+      var m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 6, 18), mat(color, 0.6));
+      m.position.set(x, y, z);
+      m.rotation.z = rz || 0;
+      return m;
+    }
+    function bone(r, from, to, color) {
+      var a = new THREE.Vector3(from[0], from[1], from[2]);
+      var b = new THREE.Vector3(to[0], to[1], to[2]);
+      var d = new THREE.Vector3().subVectors(b, a);
+      var len = d.length();
+      var m = new THREE.Mesh(new THREE.CapsuleGeometry(r, Math.max(0.02, len - 2 * r), 6, 16), mat(color, 0.6));
+      m.position.copy(a).add(b).multiplyScalar(0.5);
+      m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+      return m;
+    }
+
+    // 地面阴影（半透明圆片）
+    var shadow = new THREE.Mesh(
+      new THREE.CircleGeometry(2.0, 48),
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.10 })
+    );
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = 0.01;
+    root.add(shadow);
+
+    // 桌子
+    root.add(box(2.9, 0.1, 1.4, 0xc08a53, 0, 0.8, 0));
+    [[-1.3, 0.6], [-1.3, -0.6], [1.3, 0.6], [1.3, -0.6]].forEach(function (p) {
+      root.add(box(0.12, 0.8, 0.12, 0x8a5a33, p[0], 0.4, p[1]));
+    });
+
+    // 键盘
+    root.add(box(0.9, 0.05, 0.34, 0x2b2f36, -0.5, 0.9, 0.15));
+    for (var ki = 0; ki < 3; ki++) {
+      root.add(box(0.8, 0.02, 0.08, 0x4a4f57, -0.5, 0.92, 0.1 + ki * 0.06));
+    }
+
+    // 显示器（右侧，屏幕朝向镜头）
+    var mon = new THREE.Group();
+    mon.position.set(0.8, 0.8, 0.12);
+    mon.rotation.y = -0.12;
+    root.add(mon);
+    mon.add(box(1.35, 0.78, 0.07, 0x1c1f24, 0, 0.42, 0));
+    mon.add(box(0.1, 0.3, 0.1, 0x2b2f36, 0, -0.08, 0));
+    mon.add(box(0.4, 0.04, 0.3, 0x2b2f36, 0, -0.26, 0));
+
+    // 屏幕（用 CanvasTexture 显示滚动代码）
+    var sc = document.createElement('canvas');
+    sc.width = 512;
+    sc.height = 296;
+    var ctx = sc.getContext('2d');
+    var screenTex = new THREE.CanvasTexture(sc);
+    screenTex.minFilter = THREE.LinearFilter;
+    screenTex.magFilter = THREE.LinearFilter;
+    var screen = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.26, 0.72),
+      new THREE.MeshBasicMaterial({ map: screenTex })
+    );
+    screen.position.set(0, 0.42, 0.04);
+    mon.add(screen);
+
+    var codeLines = [
+      'const hello = () => {',
+      '  while (alive) {',
+      '    coffee.drink();',
+      '    code.write();',
+      '    bugs.fix();',
+      '  }',
+      '};',
+      '',
+      'hello();'
+    ];
+    var totalLen = 0;
+    codeLines.forEach(function (l) { totalLen += l.length + 1; });
+    var typedCount = 0;
+    var typeAcc = 0;
+
+    function drawScreen() {
+      ctx.fillStyle = '#0b1020';
+      ctx.fillRect(0, 0, sc.width, sc.height);
+      ctx.font = '600 20px "SFMono-Regular", Menlo, Consolas, monospace';
+      var remaining = reduced ? totalLen : typedCount;
+      var y = 34;
+      var cursorX = 24;
+      var cursorY = 34;
+      for (var i = 0; i < codeLines.length; i++) {
+        if (remaining <= 0) break;
+        var line = codeLines[i];
+        var n = Math.min(line.length, remaining);
+        var text = line.slice(0, n);
+        ctx.fillStyle = i === 0 ? '#79c0ff' : '#8b949e';
+        if (n > 0) {
+          ctx.fillText(text, 24, y);
+          cursorX = 24 + ctx.measureText(text).width;
+        } else {
+          cursorX = 24;
+        }
+        cursorY = y;
+        remaining -= (line.length + 1);
+        y += 28;
+      }
+      if (!reduced && Math.floor(performance.now() / 420) % 2 === 0) {
+        ctx.fillStyle = '#e6edf3';
+        ctx.fillRect(cursorX + 2, cursorY - 18, 9, 20);
+      }
+      screenTex.needsUpdate = true;
+    }
+
+    // Q 版小人（坐在桌子后方左侧）
+    var charGroup = new THREE.Group();
+    charGroup.position.set(-0.5, 0, -1.0);
+    root.add(charGroup);
+
+    var SKIN = 0xffd9b3;
+    var HAIR = 0x4a3728;
+    var SHIRT = 0x4ea8a0;
+    var PANTS = 0x3b4a5a;
+    charGroup.add(capsule(0.22, 0.22, PANTS, 0, 0.52, 0));
+    charGroup.add(capsule(0.2, 0.28, SHIRT, 0, 0.98, 0));
+
+    // 椅子
+    root.add(box(0.66, 1.0, 0.08, 0x7a5230, -0.5, 1.15, -1.45));
+    root.add(box(0.66, 0.1, 0.66, 0x7a5230, -0.5, 0.62, -1.28));
+
+    // 头
+    var headGroup = new THREE.Group();
+    headGroup.position.set(0, 1.62, 0);
+    charGroup.add(headGroup);
+    headGroup.add(sphere(0.42, SKIN, 0, 0, 0));
+
+    var hair = new THREE.Mesh(
+      new THREE.SphereGeometry(0.44, 36, 24, 0, Math.PI * 2, 0, Math.PI * 0.55),
+      mat(HAIR, 0.6)
+    );
+    hair.position.set(0, 0.03, -0.05);
+    headGroup.add(hair);
+    var fringe = new THREE.Mesh(
+      new THREE.SphereGeometry(0.35, 36, 20, 0, Math.PI * 2, 0, Math.PI * 0.3),
+      mat(HAIR, 0.6)
+    );
+    fringe.position.set(0, 0.14, 0.17);
+    headGroup.add(fringe);
+
+    // 眼睛
+    var eyeL = new THREE.Group();
+    eyeL.position.set(-0.16, 0.05, 0.36);
+    headGroup.add(eyeL);
+    eyeL.add(sphere(0.085, 0xffffff, 0, 0, 0));
+    var pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.042, 20, 14), mat(0x23232c, 0.4));
+    pupilL.position.set(0, -0.01, 0.075);
+    eyeL.add(pupilL);
+
+    var eyeR = new THREE.Group();
+    eyeR.position.set(0.16, 0.05, 0.36);
+    headGroup.add(eyeR);
+    eyeR.add(sphere(0.085, 0xffffff, 0, 0, 0));
+    var pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.042, 20, 14), mat(0x23232c, 0.4));
+    pupilR.position.set(0, -0.01, 0.075);
+    eyeR.add(pupilR);
+
+    // 腮红 + 嘴巴
+    headGroup.add(sphere(0.05, 0xf8b6a8, -0.27, -0.06, 0.32));
+    headGroup.add(sphere(0.05, 0xf8b6a8, 0.27, -0.06, 0.32));
+    headGroup.add(box(0.1, 0.028, 0.02, 0x5a3a2a, 0, -0.17, 0.36));
+
+    // 手臂 + 手
+    var shoulderY = 1.24;
+    var handY = 0.95;
+    var handL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 20, 16), mat(SKIN, 0.6));
+    handL.position.set(-0.12, handY, 1.05);
+    charGroup.add(handL);
+    var handR = new THREE.Mesh(new THREE.SphereGeometry(0.09, 20, 16), mat(SKIN, 0.6));
+    handR.position.set(0.12, handY, 1.05);
+    charGroup.add(handR);
+    charGroup.add(bone(0.08, [-0.2, shoulderY, 0.1], [-0.12, handY, 1.0], SHIRT));
+    charGroup.add(bone(0.08, [0.2, shoulderY, 0.1], [0.12, handY, 1.0], SHIRT));
+
+    // 咖啡杯
+    var mug = new THREE.Group();
+    mug.position.set(-1.05, 0.8, 0.45);
+    root.add(mug);
+    mug.add(new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.075, 0.16, 22), mat(0xe76f51, 0.4)));
+    var handle = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.018, 10, 22), mat(0xe76f51, 0.4));
+    handle.rotation.y = Math.PI / 2;
+    handle.position.set(0.1, 0, 0);
+    mug.add(handle);
+
+    // 漂浮粒子
+    var particles = [];
+    if (!reduced) {
+      var pGeo = new THREE.SphereGeometry(0.02, 8, 8);
+      for (var pi = 0; pi < 16; pi++) {
+        var pm = new THREE.Mesh(pGeo, mat(0xd9b26a, 0.5));
+        pm.position.set((Math.random() - 0.5) * 3.4, Math.random() * 2.4, (Math.random() - 0.5) * 2.2);
+        root.add(pm);
+        particles.push({ m: pm, sp: 0.1 + Math.random() * 0.25, ph: Math.random() * Math.PI * 2 });
+      }
+    }
+
+    // ---- 加载 Blender 导出的 GLB 模型（software_engineer.glb）----
+    var modelRoot = new THREE.Group();
+    var usingModel = false;
+    var mixer = null;
+
+    var loader = new GLTFLoader();
+    loader.load(
+      "{{ '/assets/models/software_engineer.glb' | relative_url }}",
+      function (gltf) {
+        var model = gltf.scene;
+
+        // 隐藏 Blender 默认残留的 Cube / Plane
+        model.traverse(function (obj) {
+          if (obj.name === 'Cube' || obj.name === 'Plane') {
+            obj.visible = false;
+          }
+        });
+
+        // 自动适配：计算包围盒，缩放并居中，地板贴到 y=0
+        var box3 = new THREE.Box3().setFromObject(model);
+        var size = box3.getSize(new THREE.Vector3());
+        var center = box3.getCenter(new THREE.Vector3());
+        var scale = Math.min(5.4 / Math.max(size.x, size.z), 2.2 / size.y);
+        lookY = size.y * scale * 0.5;
+        modelRoot.scale.setScalar(scale);
+        modelRoot.position.set(
+          -center.x * scale,
+          -box3.min.y * scale,
+          -center.z * scale
+        );
+        modelRoot.add(model);
+        scene.add(modelRoot);
+
+        // 播放模型自带动画（如果有）
+        if (gltf.animations && gltf.animations.length) {
+          mixer = new THREE.AnimationMixer(model);
+          mixer.clipAction(gltf.animations[0]).play();
+        }
+
+        // 模型加载成功后隐藏程序化场景
+        root.visible = false;
+        usingModel = true;
+      },
+      function (xhr) {
+        if (xhr.total) {
+          console.log('[hero-3d] 模型加载进度', Math.round(xhr.loaded / xhr.total * 100) + '%');
+        }
+      },
+      function (err) {
+        console.error('[hero-3d] GLB 模型加载失败，使用程序化小人兜底:', err);
+      }
+    );
+
+    // 拖拽旋转
+    var userYaw = 0;
+    var userCamY = 0;
+    var dragging = false;
+    var px = 0;
+    var py = 0;
+    mount.addEventListener('pointerdown', function (e) {
+      dragging = true;
+      px = e.clientX;
+      py = e.clientY;
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      userYaw += (e.clientX - px) * 0.005;
+      userCamY += (e.clientY - py) * 0.006;
+      userCamY = Math.max(-0.9, Math.min(1.1, userCamY));
+      px = e.clientX;
+      py = e.clientY;
+    });
+    window.addEventListener('pointerup', function () { dragging = false; });
+
+    function resize() {
+      var w = mount.clientWidth || 1;
+      var h = mount.clientHeight || 1;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    var clock = new THREE.Clock();
+    var ready = false;
+    function tick() {
+      requestAnimationFrame(tick);
+      var dt = Math.min(clock.getDelta(), 0.05);
+      var t = clock.elapsedTime;
+
+      if (usingModel) {
+        modelRoot.rotation.y = userYaw;
+        if (mixer) mixer.update(dt);
+      } else if (!reduced) {
+        typeAcc += dt;
+        if (typeAcc > 0.05) {
+          typeAcc = 0;
+          typedCount = (typedCount + 1) % totalLen;
+        }
+        handL.position.y = handY + Math.sin(t * 14) * 0.02;
+        handR.position.y = handY + Math.sin(t * 14 + Math.PI) * 0.02;
+        headGroup.position.y = 1.62 + Math.sin(t * 2.2) * 0.015;
+        headGroup.rotation.y = Math.sin(t * 0.9) * 0.06;
+        var bp = t % 3.4;
+        var s = bp > 3.25 ? Math.max(0.06, (3.4 - bp) / 0.15) : 1;
+        eyeL.scale.y = s;
+        eyeR.scale.y = s;
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          p.m.position.y += p.sp * dt;
+          p.m.position.x += Math.sin(t + p.ph) * 0.001;
+          if (p.m.position.y > 2.6) p.m.position.y = 0;
+        }
+        root.rotation.y = userYaw + Math.sin(t * 0.22) * 0.22;
+      } else {
+        root.rotation.y = userYaw;
+      }
+
+      camera.position.y = baseCamY + userCamY;
+      camera.lookAt(0, lookY, 0);
+      if (!usingModel) drawScreen();
+      renderer.render(scene, camera);
+      if (!ready) {
+        ready = true;
+        mount.classList.add('hero-3d--ready');
+      }
+    }
+    tick();
+  })();
+</script>
